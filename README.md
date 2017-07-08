@@ -6,7 +6,7 @@
 
 [![](https://jitpack.io/v/iamlocky/LockyPhotoPicker.svg)](https://jitpack.io/#iamlocky/LockyPhotoPicker)
 ## 注: 图片选择/拍照->裁剪->压缩 整个流程的操作已经串起到下面的库中
-[PhotoOut](https://github.com/hss01248/PhotoOut)
+
 
 
 本项目fork 自
