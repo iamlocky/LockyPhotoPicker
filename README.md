@@ -1,7 +1,7 @@
 
-# 微信ui版的PhotoPicker
-# 注: 此项目已转移至本人主账号下:在那里继续更新
-[主账号下的PhotoPicker](https://github.com/hss01248/PhotoPicker)
+# 微信ui版的PhotoPicker,增加设置最大图片数功能
+
+
 
 
 [![](https://jitpack.io/v/glassLake/PhotoPicker.svg)](https://jitpack.io/#glassLake/PhotoPicker)
@@ -9,72 +9,10 @@
 [PhotoOut](https://github.com/hss01248/PhotoOut)
 
 
-本项目fork 自[photoPicker](https://github.com/donglua/PhotoPicker)
-
-参考微信的图片选择ui，对原项目photoPicker进行改写。
-
-标题栏：去除难用的toolbar，改成自定义的titlebar。高度44dp，标题居中，颜色引用activity主题设置colorPrimary.可以自己设置.
-
-底部弹出框：原项目两边有间距，现改成铺满屏幕宽度弹出
-
-默认图片更改成黑灰色背景，让滑动时图片闪动不会那么突兀
-
-图片item再加一层蒙版，未选择状态时，由中间向上下浅黑透明渐变，选择状态下，颜色变黑。
-
-选择框： 未选状态下由原来的不透明变成透明，选中状态时图标颜色使用微信的绿色。
+本项目fork 自
+[PhotoPicker](https://github.com/hss01248/PhotoPicker)
 
 
-
-demo apk：见项目根目录下demo.apk
-
-
-# 更新:
-
-1.0.1: 
-将图片选择后显示的组件封装了一下,提供了最简化使用的api
-该组件既可以用于图片选择后的显示,也可以用于单纯的多图显示,只要设置类型就行
-
-
-
-1.0.2
-
-单纯显示图片时,由原来的4列改成3列
-
-修复图片预览时删到最后一张时的数组角标越界bug
-
-
-
----
-
-# 效果图
- ![all](all.jpg)
-
-
-
-
-文件夹切换：底部弹窗
-
-
-
- ![popwin](popwin.jpg)
-
-
-
-
-
-图片预览：
-
- ![preview](preview.jpg)
-
-
-
-封装好的图片显示组件:(上方是图片选择,下面是只显示图片的组件)
-
- ![multview](multview.png)
-
-
-
----
 
 # Usage
 
@@ -125,7 +63,7 @@ recyclerView.init(this,MultiPickResultView.ACTION_SELECT,null);
 
 ```
 //可以初始化时传入地址
-recyclerViewShowOnly.init(this,MultiPickResultView.ACTION_ONLY_SHOW,pathslook);
+recyclerViewShowOnly.init(this,maxCount,MultiPickResultView.ACTION_ONLY_SHOW,pathslook);
 
 //也可以后续设置地址:
  recyclerViewShowOnly.showPics(pathslook);
