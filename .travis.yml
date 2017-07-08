@@ -1,0 +1,19 @@
+language: android
+
+before_install:
+ - chmod +x gradlew
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-23.0.3
+    - android-23
+    - extra-android-m2repository
+
+notifications:
+  email: false
+
+sudo: false
+
+script: ./gradlew build
