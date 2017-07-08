@@ -4,7 +4,7 @@
 
 
 
-[![](https://jitpack.io/v/glassLake/PhotoPicker.svg)](https://jitpack.io/#glassLake/PhotoPicker)
+[![](https://jitpack.io/v/iamlocky/LockyPhotoPicker.svg)](https://jitpack.io/#iamlocky/LockyPhotoPicker)
 ## 注: 图片选择/拍照->裁剪->压缩 整个流程的操作已经串起到下面的库中
 [PhotoOut](https://github.com/hss01248/PhotoOut)
 
@@ -29,7 +29,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        compile 'com.github.glassLake:PhotoPicker:1.0.3'
+	        compile 'com.github.iamlocky:LockyPhotoPicker:1.0.0'
 	}
 
 
