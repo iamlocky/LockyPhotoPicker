@@ -17,7 +17,7 @@ import android.widget.TextView;
 import me.iwf.photopicker.R;
 
 /**
- * Created by Administrator on 2016/8/5.
+ * Updated by LockyLuo on 18/8/3.
  */
 public class Titlebar extends FrameLayout {
     private RelativeLayout rootView;
@@ -59,21 +59,21 @@ public class Titlebar extends FrameLayout {
     private Activity mActivity;
 
     public Titlebar(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public Titlebar(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public Titlebar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context);
-        initData(context, attrs,defStyleAttr);
-        initEvent(context,attrs,defStyleAttr);
+        initData(context, attrs, defStyleAttr);
+        initEvent(context, attrs, defStyleAttr);
     }
 
-    public void init(Activity activity){
+    public void init(Activity activity) {
         mActivity = activity;
         leftOnclickListener = new OnClickListener() {
             @Override
@@ -87,7 +87,7 @@ public class Titlebar extends FrameLayout {
 
     private void initEvent(Context context, AttributeSet attrs, int defStyleAttr) {
 
-        if (context instanceof Activity){
+        if (context instanceof Activity) {
             final Activity activity = (Activity) context;
             leftOnclickListener = new OnClickListener() {
                 @Override
@@ -100,8 +100,8 @@ public class Titlebar extends FrameLayout {
 
     }
 
-    public void setLeftOnclickListener(OnClickListener listener){
-        if (listener != null){
+    public void setLeftOnclickListener(OnClickListener listener) {
+        if (listener != null) {
             leftOnclickListener = listener;
             ivLeft.setOnClickListener(leftOnclickListener);
             tvLeft.setOnClickListener(leftOnclickListener);
@@ -109,65 +109,63 @@ public class Titlebar extends FrameLayout {
 
     }
 
-    public void setRightOnclickListener(OnClickListener listener){
-        if (listener != null){
+    public void setRightOnclickListener(OnClickListener listener) {
+        if (listener != null) {
             rightOnclickListener = listener;
             ivRight.setOnClickListener(rightOnclickListener);
             tvRight.setOnClickListener(rightOnclickListener);
         }
     }
 
-    public void setTitle(String title){
-        if (!TextUtils.isEmpty(title)){
+    public void setTitle(String title) {
+        if (!TextUtils.isEmpty(title)) {
             tvTitle.setText(title);
             tvTitle.setVisibility(VISIBLE);
         }
     }
 
-    public void setLeft(Drawable leftDrawable,String leftTxt,OnClickListener listener){
-        if (leftDrawable != null){
+    public void setLeft(Drawable leftDrawable, String leftTxt, OnClickListener listener) {
+        if (leftDrawable != null) {
             ivLeft.setVisibility(VISIBLE);
             ivLeft.setImageDrawable(leftDrawable);
             tvLeft.setVisibility(GONE);
-        }else if (!TextUtils.isEmpty(leftTxt)){
+        } else if (!TextUtils.isEmpty(leftTxt)) {
             tvLeft.setVisibility(VISIBLE);
             tvLeft.setText(leftTxt);
             ivLeft.setVisibility(GONE);
-        }else {//all not set,default
+        } else {//all not set,default
 
         }
 
-        if (listener != null){
+        if (listener != null) {
             leftOnclickListener = listener;
         }
 
 
-
-
     }
 
-    public void setRitht(Drawable rightDrawable,String rightTxt,OnClickListener listener){
-        if (!TextUtils.isEmpty(rightTxt)){
+    public void setRight(Drawable rightDrawable, String rightText, OnClickListener listener) {
+        if (!TextUtils.isEmpty(rightText)) {
             tvRight.setVisibility(VISIBLE);
-            tvRight.setText(rightTxt);
+            tvRight.setText(rightText);
             ivRight.setVisibility(GONE);
-            if (listener != null){
+            if (listener != null) {
                 rightOnclickListener = listener;
                 tvRight.setOnClickListener(rightOnclickListener);
             }
-        }else if (rightDrawable != null){
+        } else if (rightDrawable != null) {
             ivRight.setVisibility(VISIBLE);
             tvRight.setVisibility(GONE);
             ivRight.setImageDrawable(rightDrawable);
-            if (listener != null){
+            if (listener != null) {
                 rightOnclickListener = listener;
                 ivRight.setOnClickListener(rightOnclickListener);
             }
-        }else {
+        } else {
 
         }
 
-        if (listener != null){
+        if (listener != null) {
             rightOnclickListener = listener;
             ivRight.setOnClickListener(rightOnclickListener);
         }
@@ -178,22 +176,22 @@ public class Titlebar extends FrameLayout {
         TypedArray typedArray = null;
         try {
             typedArray = context.obtainStyledAttributes(attrs, R.styleable.MyTitlebar);
-          String  leftTxt = typedArray.getString(R.styleable.MyTitlebar_mtb_leftTxt);
-            String  title = typedArray.getString(R.styleable.MyTitlebar_mtb_title);
-            String  rightTxt = typedArray.getString(R.styleable.MyTitlebar_mtb_rightTxt);
+            String leftTxt = typedArray.getString(R.styleable.MyTitlebar_mtb_leftTxt);
+            String title = typedArray.getString(R.styleable.MyTitlebar_mtb_title);
+            String rightTxt = typedArray.getString(R.styleable.MyTitlebar_mtb_rightTxt);
 
             Drawable leftDrawable = typedArray.getDrawable(R.styleable.MyTitlebar_mtb_left_icon);
             Drawable rightDrawable = typedArray.getDrawable(R.styleable.MyTitlebar_mtb_right_icon);
 
-           //left:drawable first
-           setLeft(leftDrawable,leftTxt,null);
+            //left:drawable first
+            setLeft(leftDrawable, leftTxt, null);
 
             //center
             setTitle(title);
 
 
             //right: text first
-            setRitht(rightDrawable,rightTxt,null);
+            setRight(rightDrawable, rightTxt, null);
 
 
         } finally {
@@ -205,7 +203,7 @@ public class Titlebar extends FrameLayout {
     }
 
     private void initView(Context context) {
-        rootView = (RelativeLayout) View.inflate(context,R.layout.view_titlebar,null);
+        rootView = (RelativeLayout) View.inflate(context, R.layout.view_titlebar, null);
         ivLeft = (ImageView) rootView.findViewById(R.id.iv_left);
         tvLeft = (TextView) rootView.findViewById(R.id.tv_left);
 

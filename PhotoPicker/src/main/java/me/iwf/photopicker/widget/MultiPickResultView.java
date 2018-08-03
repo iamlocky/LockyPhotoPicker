@@ -20,7 +20,7 @@ import java.util.List;
 import me.iwf.photopicker.PhotoPickUtils;
 
 /**
- * Created by Administrator on 2016/8/15 0015.
+ * Updated by LockyLuo on 18/8/3.
  */
 public class MultiPickResultView extends FrameLayout {
 
@@ -30,9 +30,8 @@ public class MultiPickResultView extends FrameLayout {
     @Retention(RetentionPolicy.SOURCE)
 
     //Declare the NavigationMode annotation
-    public @interface MultiPicAction {}
-
-
+    public @interface MultiPicAction {
+    }
 
 
     public static final int ACTION_SELECT = 1;//该组件用于图片选择
@@ -54,19 +53,20 @@ public class MultiPickResultView extends FrameLayout {
     android.support.v7.widget.RecyclerView recyclerView;
     PhotoAdapter photoAdapter;
     ArrayList<String> selectedPhotos;
+
     public MultiPickResultView(Context context) {
-        this(context,null,0);
+        this(context, null, 0);
     }
 
     public MultiPickResultView(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public MultiPickResultView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initView(context,attrs);
-        initData(context,attrs);
-        initEvent(context,attrs);
+        initView(context, attrs);
+        initData(context, attrs);
+        initEvent(context, attrs);
     }
 
     private void initEvent(Context context, AttributeSet attrs) {
@@ -79,7 +79,7 @@ public class MultiPickResultView extends FrameLayout {
 
     private void initView(Context context, AttributeSet attrs) {
 
-        recyclerView = new android.support.v7.widget.RecyclerView(context,attrs);
+        recyclerView = new android.support.v7.widget.RecyclerView(context, attrs);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(4, OrientationHelper.VERTICAL));
         this.addView(recyclerView);
     }
@@ -90,44 +90,38 @@ public class MultiPickResultView extends FrameLayout {
         this(context, attrs, defStyleAttr);
     }
 
-    public void init(Activity context,int maxCount,@MultiPicAction  int action, List<String> photos){
+    public void init(Activity context, int maxCount, @MultiPicAction int action, List<String> photos) {
         this.action = action;
-        this.maxCount=maxCount;
-        if (action == MultiPickResultView.ACTION_ONLY_SHOW){//当只用作显示图片时,一行显示3张
+        this.maxCount = maxCount;
+        if (action == MultiPickResultView.ACTION_ONLY_SHOW) {//当只用作显示图片时,一行显示3张
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
         }
 
         selectedPhotos = new ArrayList<>();
 
         this.action = action;
-        if (photos != null && photos.size() >0){
+        if (photos != null && photos.size() > 0) {
             selectedPhotos.addAll(photos);
         }
-        photoAdapter = new PhotoAdapter(context, selectedPhotos,this.maxCount);
+        photoAdapter = new PhotoAdapter(context, selectedPhotos, this.maxCount);
         photoAdapter.setAction(action);
         recyclerView.setAdapter(photoAdapter);
 
     }
 
 
-    public void showPics(List<String> paths){
-        if (paths != null){
+    public void showPics(List<String> paths) {
+        if (paths != null) {
             selectedPhotos.clear();
             selectedPhotos.addAll(paths);
-           photoAdapter.notifyDataSetChanged();
+            photoAdapter.notifyDataSetChanged();
         }
 
     }
 
 
-
-
-
-
-
-
-    public  void onActivityResult(int requestCode, int resultCode, Intent data){
-        if (action == ACTION_SELECT){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (action == ACTION_SELECT) {
             PhotoPickUtils.onActivityResult(requestCode, resultCode, data, new PhotoPickUtils.PickHandler() {
                 @Override
                 public void onPickSuccess(ArrayList<String> photos) {
@@ -141,14 +135,13 @@ public class MultiPickResultView extends FrameLayout {
 
                 @Override
                 public void onPickFail(String error) {
-                    Toast.makeText(getContext(),error,Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
                     selectedPhotos.clear();
                     photoAdapter.notifyDataSetChanged();
                 }
 
                 @Override
-                public void onPickCancle() {
-                    //Toast.makeText(getContext(),"取消选择",Toast.LENGTH_LONG).show();
+                public void onPickCancel() {
                 }
             });
         }

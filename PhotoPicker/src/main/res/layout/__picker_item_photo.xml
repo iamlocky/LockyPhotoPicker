@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     >
   <ImageView
-      android:padding="1dip"
+      android:padding="1dp"
       android:layout_gravity="center"
       android:id="@+id/iv_photo"
-      android:scaleType="centerCrop"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:adjustViewBounds="true"
@@ -25,15 +24,15 @@
       android:id="@+id/v_delete"
       android:background="@drawable/icon_delete"
       android:layout_alignParentRight="true"
-      android:layout_width="15dp"
-      android:layout_height="15dp"/>
+      android:layout_width="20dp"
+      android:layout_height="20dp"/>
 
   <ImageView
-      android:layout_margin="5dip"
+      android:layout_margin="5dp"
       android:layout_alignParentTop="true"
       android:layout_alignParentRight="true"
       android:clickable="true"
-      android:padding="5dip"
+      android:padding="5dp"
       android:id="@+id/v_selected"
       android:src="@drawable/__picker_checkbox_bg"
       android:layout_width="wrap_content"

@@ -10,37 +10,35 @@ import java.util.ArrayList;
  */
 public class PhotoPickUtils {
 
-    public static void onActivityResult(int requestCode, int resultCode, Intent data,PickHandler pickHandler ) {
+    public static void onActivityResult(int requestCode, int resultCode, Intent data, PickHandler pickHandler) {
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == PhotoPicker.REQUEST_CODE) {//第一次，选择图片后返回
+            if (requestCode == PhotoPicker.REQUEST_CODE) {//选择图片后返回
                 if (data != null) {
                     ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
                     pickHandler.onPickSuccess(photos);
-
                 } else {
-                    pickHandler.onPickFail("选择图片失败");
+                    pickHandler.onPickFail("未选择图片");
                 }
-            }else if (requestCode == PhotoPreview.REQUEST_CODE){//如果是预览与删除后返回
+            } else if (requestCode == PhotoPreview.REQUEST_CODE) {//如果是预览后返回
                 if (data != null) {
                     ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
                     pickHandler.onPreviewBack(photos);
                 } else {
-                   // pickHandler.onPickFail("选择图片失败");
+                    pickHandler.onPreviewBack(new ArrayList<String>());
                 }
 
             }
-        }else {
-
-            if (requestCode == PhotoPicker.REQUEST_CODE){
-                pickHandler.onPickCancle();
+        } else {
+            if (requestCode == PhotoPicker.REQUEST_CODE) {
+                pickHandler.onPickCancel();
             }
         }
 
 
     }
 
-    public static void startPick(Activity context,boolean showGif,int photoCount,ArrayList<String> photos){
+    public static void startPick(Activity context, boolean showGif, int photoCount, ArrayList<String> photos) {
         PhotoPicker.builder()
                 .setPhotoCount(photoCount)
                 .setShowCamera(false)
@@ -51,11 +49,13 @@ public class PhotoPickUtils {
     }
 
 
-
-    public interface  PickHandler{
+    public interface PickHandler {
         void onPickSuccess(ArrayList<String> photos);
+
         void onPreviewBack(ArrayList<String> photos);
+
         void onPickFail(String error);
-        void onPickCancle();
+
+        void onPickCancel();
     }
 }

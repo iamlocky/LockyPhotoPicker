@@ -83,24 +83,30 @@ PhotoPickUtils.startPick(Activity context,boolean showGif,int photoCount,ArrayLi
 
 ### onActivityResult
 ```java
- @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    PhotoPickUtils.onActivityResult(requestCode, resultCode, data, new 		PhotoPickUtils.PickHandler() {
-      @Override
-      public void onPickSuccess(ArrayList<String> photos) {//已经预先做了null或size为0的判断
-       
-      }
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        PhotoPickUtils.onActivityResult(requestCode, resultCode, data, new PhotoPickUtils.PickHandler() {
+            @Override
+            public void onPickSuccess(ArrayList<String> photos) {//已经预先做了null或size为0的判断
 
-      @Override
-      public void onPickFail(String error) {
-        Toast.makeText(MainActivity.this,error,Toast.LENGTH_LONG).show();
-      }
+            }
 
-      @Override
-      public void onCancle() {
-        Toast.makeText(MainActivity.this,"取消选择",Toast.LENGTH_LONG).show();
-      }
-    });
+            @Override
+            public void onPreviewBack(ArrayList<String> photos) {
+
+            }
+
+            @Override
+            public void onPickFail(String error) {
+                Toast.makeText(getApplicationContext(),error,Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onPickCancel() {
+                Toast.makeText(getApplicationContext(),"取消选择", Toast.LENGTH_LONG).show();
+
+            }
+        });}
 ```
 
 ### manifest
