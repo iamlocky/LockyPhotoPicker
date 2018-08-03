@@ -31,7 +31,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
   private LayoutInflater inflater;
 
   private Context mContext;
-    private RequestOptions options= new RequestOptions().dontAnimate().centerCrop();
+    private RequestOptions options= new RequestOptions().dontAnimate();
 
 
     public void setAction(@MultiPickResultView.MultiPicAction int action) {
@@ -95,10 +95,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
   public void onBindViewHolder(final PhotoViewHolder holder, final int position) {
 
     if (action == MultiPickResultView.ACTION_SELECT){
-     // RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) holder.ivPhoto.getLayoutParams();
-
       holder.ivPhoto.setPadding(padding,padding,padding,padding);
-
 
       if (position == getItemCount() -1){//最后一个始终是+号，点击能够跳去添加图片
           options=options.placeholder(R.drawable.icon_pic_default)
@@ -157,16 +154,15 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         });
       }
     }else if (action == MultiPickResultView.ACTION_ONLY_SHOW){
-      //Uri uri = Uri.fromFile(new File(photoPaths.get(position)));
-      //Uri uri = Uri.parse(photoPaths.get(position));
+
       Log.e("pic",photoPaths.get(position));
       options=options.placeholder(R.drawable.__picker_default_weixin)
+              .centerInside()
               .error(R.drawable.__picker_ic_broken_image_black_48dp);
 
               Glide.with(mContext)
               .load(photoPaths.get(position))
                       .thumbnail(0.1f)
-                     // .bitmapTransform(new RoundedCornersTransformation(mContext,4,0))
               .apply(options)
               .into(holder.ivPhoto);
 
@@ -182,14 +178,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         }
       });
     }
-
-
-
-
   }
-
-
-
 
   @Override public int getItemCount() {
     return action == MultiPickResultView.ACTION_SELECT ? photoPaths.size()+1 : photoPaths.size();
