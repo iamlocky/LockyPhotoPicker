@@ -7,6 +7,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
 import java.util.List;
 import me.iwf.photopicker.R;
@@ -14,6 +16,7 @@ import me.iwf.photopicker.entity.PhotoDirectory;
 
 /**
  * Created by donglua on 15/6/28.
+ * Updated by LockyLuo on 18/8/2.
  */
 public class PopupDirectoryListAdapter extends BaseAdapter {
 
@@ -71,8 +74,9 @@ public class PopupDirectoryListAdapter extends BaseAdapter {
     }
 
     public void bindData(PhotoDirectory directory) {
+      RequestOptions options=new RequestOptions().dontAnimate();
       glide.load(directory.getCoverPath())
-          .dontAnimate()
+              .apply(options)
           .thumbnail(0.1f)
           .into(ivCover);
       tvName.setText(directory.getName());

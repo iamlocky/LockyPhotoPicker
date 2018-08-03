@@ -3,6 +3,7 @@ package me.iwf.photopicker.widget;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,9 +31,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
   private LayoutInflater inflater;
 
   private Context mContext;
+    private RequestOptions options= new RequestOptions().dontAnimate().centerCrop();
 
 
-  public void setAction(@MultiPickResultView.MultiPicAction int action) {
+    public void setAction(@MultiPickResultView.MultiPicAction int action) {
     this.action = action;
   }
 
@@ -98,12 +101,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
 
       if (position == getItemCount() -1){//最后一个始终是+号，点击能够跳去添加图片
+          options=options.placeholder(R.drawable.icon_pic_default)
+                  .error(R.drawable.icon_pic_default);
         Glide.with(mContext)
                 .load("")
-                .centerCrop()
                 .thumbnail(0.1f)
-                .placeholder(R.drawable.icon_pic_default)
-                .error(R.drawable.icon_pic_default)
+                .apply(options)
                 .into(holder.ivPhoto);
         holder.ivPhoto.setOnClickListener(new View.OnClickListener() {
           @Override
@@ -122,13 +125,14 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         String str = photoPaths.get(position);
         Log.e("file",str);
         Uri uri = Uri.fromFile(new File(photoPaths.get(position)));
+        options=options.centerCrop()
+                .placeholder(R.drawable.__picker_default_weixin)
+                .error(R.drawable.__picker_ic_broken_image_black_48dp);
         Glide.with(mContext)
                 .load(uri)
-                .centerCrop()
                 .thumbnail(0.1f)
                // .bitmapTransform(new RoundedCornersTransformation(mContext,6,0))
-                .placeholder(R.drawable.__picker_default_weixin)
-                .error(R.drawable.__picker_ic_broken_image_black_48dp)
+                .apply(options)
                 .into(holder.ivPhoto);
 
 
@@ -156,13 +160,14 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
       //Uri uri = Uri.fromFile(new File(photoPaths.get(position)));
       //Uri uri = Uri.parse(photoPaths.get(position));
       Log.e("pic",photoPaths.get(position));
+      options=options.placeholder(R.drawable.__picker_default_weixin)
+              .error(R.drawable.__picker_ic_broken_image_black_48dp);
+
               Glide.with(mContext)
               .load(photoPaths.get(position))
-                      .centerCrop()
                       .thumbnail(0.1f)
                      // .bitmapTransform(new RoundedCornersTransformation(mContext,4,0))
-              .placeholder(R.drawable.__picker_default_weixin)
-              .error(R.drawable.__picker_ic_broken_image_black_48dp)
+              .apply(options)
               .into(holder.ivPhoto);
 
       holder.ivPhoto.setOnClickListener(new View.OnClickListener() {

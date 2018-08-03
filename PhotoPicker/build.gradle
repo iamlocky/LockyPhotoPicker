@@ -1,13 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion 23
-  buildToolsVersion "25.0.0"
+  compileSdkVersion 27
   resourcePrefix "__picker_"
 
   defaultConfig {
-    minSdkVersion 11
-    targetSdkVersion 23
+    minSdkVersion 14
+    targetSdkVersion 27
     versionCode 1
     versionName "0.8.5"
   }
@@ -20,14 +19,14 @@ repositories {
 }
 
 dependencies {
-  compile 'com.android.support:support-v4:23.4.0'
-  compile 'com.android.support:appcompat-v7:23.4.0'
-  compile 'com.android.support:design:23.4.0'
-  compile 'com.android.support:recyclerview-v7:23.4.0'
-  compile 'com.android.support:support-annotations:23.4.0'
-  compile 'com.nineoldandroids:library:2.4.0'
-  compile 'com.github.bumptech.glide:glide:3.7.0'
-  compile 'jp.wasabeef:glide-transformations:2.0.1'
+  implementation 'com.android.support:support-v4:27.+'
+  implementation 'com.android.support:appcompat-v7:27.+'
+  implementation 'com.android.support:design:27.+'
+  implementation 'com.android.support:recyclerview-v7:27.+'
+  implementation 'com.android.support:support-annotations:26.+'
+  implementation 'com.nineoldandroids:library:2.4.0'
+  implementation 'com.github.bumptech.glide:glide:4.+'
+  implementation 'jp.wasabeef:glide-transformations:2.+'
 
 }
 

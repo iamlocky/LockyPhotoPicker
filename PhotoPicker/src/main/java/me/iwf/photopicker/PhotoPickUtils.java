@@ -6,7 +6,7 @@ import android.content.Intent;
 import java.util.ArrayList;
 
 /**
- * Created by Administrator on 2016/8/5 0005.
+ * Updated by LockyLuo on 18/8/02.
  */
 public class PhotoPickUtils {
 
@@ -17,15 +17,7 @@ public class PhotoPickUtils {
                 if (data != null) {
                     ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
                     pickHandler.onPickSuccess(photos);
-                   /* if (photos != null){
-                        if (photos.size() >0){
 
-                        }else {
-                            pickHandler.onPickFail("未选择图片1");
-                        }
-                    }else {
-                        pickHandler.onPickFail("未选择图片2");
-                    }*/
                 } else {
                     pickHandler.onPickFail("选择图片失败");
                 }
