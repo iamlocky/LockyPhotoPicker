@@ -96,6 +96,13 @@ public class PhotoPickerActivity extends AppCompatActivity {
       getSupportFragmentManager().executePendingTransactions();
     }
 
+    titlebar.setLeftOnclickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onBackPressed();
+        }
+    });
+
     //右边的点击事件
     titlebar.getTvRight().setOnClickListener(new View.OnClickListener() {
       @Override
