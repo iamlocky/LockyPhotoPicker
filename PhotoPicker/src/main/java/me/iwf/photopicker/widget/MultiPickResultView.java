@@ -12,6 +12,9 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -67,6 +70,9 @@ public class MultiPickResultView extends FrameLayout {
         initView(context, attrs);
         initData(context, attrs);
         initEvent(context, attrs);
+
+        Logger.addLogAdapter(new AndroidLogAdapter());
+
     }
 
     private void initEvent(Context context, AttributeSet attrs) {

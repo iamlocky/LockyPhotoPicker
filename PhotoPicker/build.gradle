@@ -27,6 +27,7 @@ dependencies {
   implementation 'com.nineoldandroids:library:2.4.0'
   implementation 'com.github.bumptech.glide:glide:4.+'
   implementation 'jp.wasabeef:glide-transformations:2.+'
+  implementation 'com.orhanobut:logger:2.1.1'
 
 }
 

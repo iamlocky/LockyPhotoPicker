@@ -44,4 +44,12 @@ public class Photo {
   public void setId(int id) {
     this.id = id;
   }
+
+  @Override
+  public String toString() {
+    return "Photo{" +
+            "id=" + id +
+            ", path='" + path + '\'' +
+            '}';
+  }
 }

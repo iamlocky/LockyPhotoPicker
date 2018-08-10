@@ -16,6 +16,6 @@
   <string name="__picker_image_count">%1$d张</string>
 
   <string name="__picker_preview">预览</string>
-
+  <string name="__picker_has_no_photo">还没有选择图片</string>
 
 </resources>

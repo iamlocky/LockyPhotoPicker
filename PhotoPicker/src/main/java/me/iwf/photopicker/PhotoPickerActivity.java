@@ -119,14 +119,11 @@ public class PhotoPickerActivity extends AppCompatActivity {
       }
     });
 
-    pickerFragment.getPhotoGridAdapter().setOnItemCheckListener(new OnItemCheckListener() {
+    pickerFragment.setOnGridAdapterItemCheckListener(new OnItemCheckListener() {
       @Override public boolean OnItemCheck(int position, Photo photo, final boolean isCheck, int selectedItemCount) {
 
         int total = selectedItemCount + (isCheck ? -1 : 1);
-
        // menuDoneItem.setEnabled(total > 0);
-
-
         if (maxCount <= 1) {
           List<Photo> photos = pickerFragment.getPhotoGridAdapter().getSelectedPhotos();
           if (!photos.contains(photo)) {

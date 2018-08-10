@@ -11,6 +11,7 @@ import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +24,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.iwf.photopicker.PhotoPickerActivity;
@@ -35,6 +38,7 @@ import me.iwf.photopicker.adapter.PhotoGridAdapter;
 import me.iwf.photopicker.adapter.PopupDirectoryListAdapter;
 import me.iwf.photopicker.entity.Photo;
 import me.iwf.photopicker.entity.PhotoDirectory;
+import me.iwf.photopicker.event.OnItemCheckListener;
 import me.iwf.photopicker.event.OnPhotoClickListener;
 import me.iwf.photopicker.utils.ImageCaptureManager;
 import me.iwf.photopicker.utils.MediaStoreHelper;
@@ -50,268 +54,329 @@ import static me.iwf.photopicker.utils.MediaStoreHelper.INDEX_ALL_PHOTOS;
  * Created by donglua on 15/5/31.
  */
 public class PhotoPickerFragment extends Fragment {
+    private static final String TAG = "PhotoPickerFragment";
+    private ImageCaptureManager captureManager;
+    private PhotoGridAdapter photoGridAdapter;
 
-  private ImageCaptureManager captureManager;
-  private PhotoGridAdapter photoGridAdapter;
+    private PopupDirectoryListAdapter listAdapter;
+    //所有photos的路径
+    private static List<PhotoDirectory> directories = new ArrayList<>();
+    //传入的已选照片
+    private ArrayList<String> originalPhotos = new ArrayList<>();
 
-  private PopupDirectoryListAdapter listAdapter;
-  //所有photos的路径
-  private List<PhotoDirectory> directories;
-  //传入的已选照片
-  private ArrayList<String> originalPhotos;
+    private int SCROLL_THRESHOLD = 30;
+    int column;
+    //目录弹出框的一次最多显示的目录数目
+    public static int COUNT_MAX = 4;
+    private final static String EXTRA_CAMERA = "camera";
+    private final static String EXTRA_COLUMN = "column";
+    private final static String EXTRA_COUNT = "count";
+    private final static String EXTRA_GIF = "gif";
+    private final static String EXTRA_ORIGIN = "origin";
+    private ListPopupWindow listPopupWindow;
+    private RequestManager mGlideRequestManager;
+    private Context mContext;
+    private Bundle mediaStoreArgs;
 
-  private int SCROLL_THRESHOLD = 30;
-  int column;
-  //目录弹出框的一次最多显示的目录数目
-  public static int COUNT_MAX = 4;
-  private final static String EXTRA_CAMERA = "camera";
-  private final static String EXTRA_COLUMN = "column";
-  private final static String EXTRA_COUNT = "count";
-  private final static String EXTRA_GIF = "gif";
-  private final static String EXTRA_ORIGIN = "origin";
-  private ListPopupWindow listPopupWindow;
-  private RequestManager mGlideRequestManager;
-  private Context mContext;
+    private OnItemCheckListener onItemCheckListener = new OnItemCheckListener() {
+        @Override
+        public boolean OnItemCheck(int position, Photo path, boolean isCheck, int selectedItemCount) {
+            return false;
+        }
+    };
+
+    public static PhotoPickerFragment newInstance(boolean showCamera, boolean showGif,
+                                                  boolean previewEnable, int column, int maxCount, ArrayList<String> originalPhotos) {
+        Bundle args = new Bundle();
+        args.putBoolean(EXTRA_CAMERA, showCamera);
+        args.putBoolean(EXTRA_GIF, showGif);
+        args.putBoolean(EXTRA_PREVIEW_ENABLED, previewEnable);
+        args.putInt(EXTRA_COLUMN, column);
+        args.putInt(EXTRA_COUNT, maxCount);
+        args.putStringArrayList(EXTRA_ORIGIN, originalPhotos);
+        PhotoPickerFragment fragment = new PhotoPickerFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public void setOnGridAdapterItemCheckListener(OnItemCheckListener onItemCheckListener) {
+        this.onItemCheckListener = onItemCheckListener;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
+
+        mGlideRequestManager = Glide.with(this);
+
+        directories = new ArrayList<>();
+        originalPhotos = getArguments().getStringArrayList(EXTRA_ORIGIN);
+
+        column = getArguments().getInt(EXTRA_COLUMN, DEFAULT_COLUMN_NUMBER);
+        boolean showCamera = getArguments().getBoolean(EXTRA_CAMERA, true);
+        boolean previewEnable = getArguments().getBoolean(EXTRA_PREVIEW_ENABLED, true);
+
+        photoGridAdapter = new PhotoGridAdapter(mContext, mGlideRequestManager, directories, originalPhotos, column);
+        photoGridAdapter.setShowCamera(showCamera);
+        photoGridAdapter.setPreviewEnable(previewEnable);
+
+        mediaStoreArgs = new Bundle();
+
+        boolean showGif = getArguments().getBoolean(EXTRA_GIF);
+        mediaStoreArgs.putBoolean(EXTRA_SHOW_GIF, showGif);
 
 
-  public static PhotoPickerFragment newInstance(boolean showCamera, boolean showGif,
-      boolean previewEnable, int column, int maxCount, ArrayList<String> originalPhotos) {
-    Bundle args = new Bundle();
-    args.putBoolean(EXTRA_CAMERA, showCamera);
-    args.putBoolean(EXTRA_GIF, showGif);
-    args.putBoolean(EXTRA_PREVIEW_ENABLED, previewEnable);
-    args.putInt(EXTRA_COLUMN, column);
-    args.putInt(EXTRA_COUNT, maxCount);
-    args.putStringArrayList(EXTRA_ORIGIN, originalPhotos);
-    PhotoPickerFragment fragment = new PhotoPickerFragment();
-    fragment.setArguments(args);
-    return fragment;
-  }
+        captureManager = new ImageCaptureManager(getActivity());
+    }
 
-  @Override public void onAttach(Context context) {
-    super.onAttach(context);
-    mContext = context;
-  }
 
-  @Override public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.__picker_fragment_photo_picker, container, false);
+        Logger.d("onCreateView");
+        listAdapter = new PopupDirectoryListAdapter(mGlideRequestManager, directories);
+        getPhotoGridAdapter().setOnItemCheckListener(onItemCheckListener);
 
-    setRetainInstance(true);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_photos);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(column, OrientationHelper.VERTICAL);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(photoGridAdapter);
 
-    mGlideRequestManager = Glide.with(this);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-    directories = new ArrayList<>();
-    originalPhotos = getArguments().getStringArrayList(EXTRA_ORIGIN);
+        final Button btSwitchDirectory = (Button) rootView.findViewById(R.id.button);
 
-    column = getArguments().getInt(EXTRA_COLUMN, DEFAULT_COLUMN_NUMBER);
-    boolean showCamera = getArguments().getBoolean(EXTRA_CAMERA, true);
-    boolean previewEnable = getArguments().getBoolean(EXTRA_PREVIEW_ENABLED, true);
+        Button btnPreview = (Button) rootView.findViewById(R.id.btn_preview);
 
-    photoGridAdapter = new PhotoGridAdapter(mContext, mGlideRequestManager, directories, originalPhotos, column);
-    photoGridAdapter.setShowCamera(showCamera);
-    photoGridAdapter.setPreviewEnable(previewEnable);
+        listPopupWindow = new ListPopupWindow(getActivity());
 
-    Bundle mediaStoreArgs = new Bundle();
+        listPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//替换背景
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        int widths = wm.getDefaultDisplay().getWidth();
+        listPopupWindow.setWidth(widths);//ListPopupWindow.MATCH_PARENT还是会有边距，直接拿到屏幕宽度来设置也不行，因为默认的background有左右padding值。
 
-    boolean showGif = getArguments().getBoolean(EXTRA_GIF);
-    mediaStoreArgs.putBoolean(EXTRA_SHOW_GIF, showGif);
-    MediaStoreHelper.getPhotoDirs(getActivity(), mediaStoreArgs,
-        new MediaStoreHelper.PhotosResultCallback() {
-          @Override public void onResultCallback(List<PhotoDirectory> dirs) {
-            directories.clear();
-            directories.addAll(dirs);
-            photoGridAdapter.notifyDataSetChanged();
-            listAdapter.notifyDataSetChanged();
-            adjustHeight();
-          }
+        listPopupWindow.setAnchorView(btSwitchDirectory);
+        listPopupWindow.setAdapter(listAdapter);
+        listPopupWindow.setModal(true);
+
+        listPopupWindow.setDropDownGravity(Gravity.BOTTOM);
+        listPopupWindow.setAnimationStyle(R.style.__picker_mystyle);
+
+        listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                listPopupWindow.dismiss();
+
+                PhotoDirectory directory = directories.get(position);
+
+                btSwitchDirectory.setText(directory.getName().toLowerCase());//默认会大写，这里要改成小写
+
+                photoGridAdapter.setCurrentDirectoryIndex(position);
+                photoGridAdapter.notifyDataSetChanged();
+            }
         });
 
-    captureManager = new ImageCaptureManager(getActivity());
-  }
+        photoGridAdapter.setOnPhotoClickListener(new OnPhotoClickListener() {
+            @Override
+            public void onClick(View v, int position, boolean showCamera) {
+                final int index = showCamera ? position - 1 : position;
+
+                List<String> photos = photoGridAdapter.getCurrentPhotoPaths();
+
+                int[] screenLocation = new int[2];
+                v.getLocationOnScreen(screenLocation);
+                ImagePagerFragment imagePagerFragment =
+                        ImagePagerFragment.newInstance(photos, index, screenLocation, v.getWidth(),
+                                v.getHeight());
+
+                ((PhotoPickerActivity) getActivity()).addImagePagerFragment(imagePagerFragment);
+            }
+        });
+
+        photoGridAdapter.setOnCameraClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    Intent intent = captureManager.dispatchTakePictureIntent();
+                    startActivityForResult(intent, ImageCaptureManager.REQUEST_TAKE_PHOTO);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        btSwitchDirectory.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (listPopupWindow.isShowing()) {
+                    listPopupWindow.dismiss();
+                } else if (!getActivity().isFinishing()) {
+                    adjustHeight();
+                    listPopupWindow.show();
+                    listPopupWindow.getListView().setVerticalScrollBarEnabled(false);
+
+                    //去掉滑动条,listview 在show之后才建立，所以需要该方法在show之后调用，否则会空指针
+                }
+            }
+        });
 
 
-  @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
-      Bundle savedInstanceState) {
-
-    final View rootView = inflater.inflate(R.layout.__picker_fragment_photo_picker, container, false);
-
-    listAdapter  = new PopupDirectoryListAdapter(mGlideRequestManager, directories);
-
-    RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.rv_photos);
-    StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(column, OrientationHelper.VERTICAL);
-    layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-    recyclerView.setLayoutManager(layoutManager);
-    recyclerView.setAdapter(photoGridAdapter);
-
-    recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-    final Button btSwitchDirectory = (Button) rootView.findViewById(R.id.button);
-
-    Button btnPreview = (Button) rootView.findViewById(R.id.btn_preview);
-
-    listPopupWindow = new ListPopupWindow(getActivity());
-
-    listPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//替换背景
-    WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-    int widths = wm.getDefaultDisplay().getWidth();
-    listPopupWindow.setWidth(widths);//ListPopupWindow.MATCH_PARENT还是会有边距，直接拿到屏幕宽度来设置也不行，因为默认的background有左右padding值。
-
-    listPopupWindow.setAnchorView(btSwitchDirectory);
-    listPopupWindow.setAdapter(listAdapter);
-    listPopupWindow.setModal(true);
-
-    listPopupWindow.setDropDownGravity(Gravity.BOTTOM);
-    listPopupWindow.setAnimationStyle(R.style.__picker_mystyle);
-
-    listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        listPopupWindow.dismiss();
-
-        PhotoDirectory directory = directories.get(position);
-
-        btSwitchDirectory.setText(directory.getName().toLowerCase());//默认会大写，这里要改成小写
-
-        photoGridAdapter.setCurrentDirectoryIndex(position);
-        photoGridAdapter.notifyDataSetChanged();
-      }
-    });
-
-    photoGridAdapter.setOnPhotoClickListener(new OnPhotoClickListener() {
-      @Override public void onClick(View v, int position, boolean showCamera) {
-        final int index = showCamera ? position - 1 : position;
-
-        List<String> photos = photoGridAdapter.getCurrentPhotoPaths();
-
-        int[] screenLocation = new int[2];
-        v.getLocationOnScreen(screenLocation);
-        ImagePagerFragment imagePagerFragment =
-            ImagePagerFragment.newInstance(photos, index, screenLocation, v.getWidth(),
-                v.getHeight());
-
-        ((PhotoPickerActivity) getActivity()).addImagePagerFragment(imagePagerFragment);
-      }
-    });
-
-    photoGridAdapter.setOnCameraClickListener(new OnClickListener() {
-      @Override public void onClick(View view) {
-        try {
-          Intent intent = captureManager.dispatchTakePictureIntent();
-          startActivityForResult(intent, ImageCaptureManager.REQUEST_TAKE_PHOTO);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    });
-
-    btSwitchDirectory.setOnClickListener(new OnClickListener() {
-      @Override public void onClick(View v) {
-
-        if (listPopupWindow.isShowing()) {
-          listPopupWindow.dismiss();
-        } else if (!getActivity().isFinishing()) {
-          adjustHeight();
-          listPopupWindow.show();
-          listPopupWindow.getListView().setVerticalScrollBarEnabled(false);
-
-          //去掉滑动条,listview 在show之后才建立，所以需要该方法在show之后调用，否则会空指针
-        }
-      }
-    });
+        //预览按钮
+        btnPreview.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (photoGridAdapter.getSelectedPhotoPaths().size() > 0) {
+                    PhotoPreview.builder()
+                            .setPhotos(photoGridAdapter.getSelectedPhotoPaths())
+                            .setCurrentItem(0)
+                            .start(getActivity());
+                } else {
+                    Toast.makeText(getActivity(), R.string.__picker_has_no_photo, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
 
-    //预览按钮
-    btnPreview.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-       if (photoGridAdapter.getSelectedPhotoPaths().size() > 0){
-         PhotoPreview.builder()
-                 .setPhotos(photoGridAdapter.getSelectedPhotoPaths())
-                 .setCurrentItem(0)
-                 .start(getActivity());
-       }else {
-         Toast.makeText(getActivity(),"还没有选择图片",Toast.LENGTH_SHORT).show();
-       }
-      }
-    });
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                // Log.d(">>> Picker >>>", "dy = " + dy);
+                if (Math.abs(dy) > SCROLL_THRESHOLD) {
+                    mGlideRequestManager.pauseRequests();
+                } else {
+                    mGlideRequestManager.resumeRequests();
+                }
+            }
 
-
-    recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-      @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        super.onScrolled(recyclerView, dx, dy);
-        // Log.d(">>> Picker >>>", "dy = " + dy);
-        if (Math.abs(dy) > SCROLL_THRESHOLD) {
-          mGlideRequestManager.pauseRequests();
-        } else {
-          mGlideRequestManager.resumeRequests();
-        }
-      }
-      @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-          mGlideRequestManager.resumeRequests();
-        }
-      }
-    });
-
-    return rootView;
-  }
-
-
-  @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == ImageCaptureManager.REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-      captureManager.galleryAddPic();
-      if (directories.size() > 0) {
-        String path = captureManager.getCurrentPhotoPath();
-        PhotoDirectory directory = directories.get(INDEX_ALL_PHOTOS);
-        directory.getPhotos().add(INDEX_ALL_PHOTOS, new Photo(path.hashCode(), path));
-        directory.setCoverPath(path);
-        photoGridAdapter.notifyDataSetChanged();
-      }
-    }
-  }
-
-
-  public PhotoGridAdapter getPhotoGridAdapter() {
-    return photoGridAdapter;
-  }
-
-
-  @Override public void onSaveInstanceState(Bundle outState) {
-    captureManager.onSaveInstanceState(outState);
-    super.onSaveInstanceState(outState);
-  }
-
-
-  @Override public void onViewStateRestored(Bundle savedInstanceState) {
-    captureManager.onRestoreInstanceState(savedInstanceState);
-    super.onViewStateRestored(savedInstanceState);
-  }
-
-  public ArrayList<String> getSelectedPhotoPaths() {
-    return photoGridAdapter.getSelectedPhotoPaths();
-  }
-
-  public void adjustHeight() {
-    if (listAdapter == null) return;
-    int count = listAdapter.getCount();
-    count = count < COUNT_MAX ? count : COUNT_MAX;
-    if (listPopupWindow != null) {
-      listPopupWindow.setHeight(count * getResources().getDimensionPixelOffset(R.dimen.__picker_item_directory_height));
-    }
-  }
-
-  @Override public void onDestroy() {
-    super.onDestroy();
-
-    if (directories == null) {
-      return;
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    mGlideRequestManager.resumeRequests();
+                }
+            }
+        });
+        Log.d(TAG, "onCreateView: ");
+        return rootView;
     }
 
-    for (PhotoDirectory directory : directories) {
-      directory.getPhotoPaths().clear();
-      directory.getPhotos().clear();
-      directory.setPhotos(null);
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ImageCaptureManager.REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            captureManager.galleryAddPic();
+            if (directories.size() > 0) {
+                String path = captureManager.getCurrentPhotoPath();
+                PhotoDirectory directory = directories.get(INDEX_ALL_PHOTOS);
+                directory.getPhotos().add(INDEX_ALL_PHOTOS, new Photo(path.hashCode(), path));
+                directory.setCoverPath(path);
+                photoGridAdapter.notifyDataSetChanged();
+            }
+        }
     }
-    directories.clear();
-    directories = null;
-  }
+
+
+    public PhotoGridAdapter getPhotoGridAdapter() {
+        return photoGridAdapter;
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        captureManager.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        captureManager.onRestoreInstanceState(savedInstanceState);
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    public ArrayList<String> getSelectedPhotoPaths() {
+        return photoGridAdapter.getSelectedPhotoPaths();
+    }
+
+    public void adjustHeight() {
+        if (listAdapter == null) return;
+        int count = listAdapter.getCount();
+        count = count < COUNT_MAX ? count : COUNT_MAX;
+        if (listPopupWindow != null) {
+            listPopupWindow.setHeight(count * getResources().getDimensionPixelOffset(R.dimen.__picker_item_directory_height));
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity()==null){
+            Logger.d("getActivity is null");
+        }
+        MediaStoreHelper.getPhotoDirs(getActivity(), mediaStoreArgs,
+                new MediaStoreHelper.PhotosResultCallback() {
+                    @Override
+                    public void onResultCallback(List<PhotoDirectory> dirs) {
+                        Log.e(TAG, "onResultCallback: " + dirs+ " ");
+                        if (dirs.size()==1)
+                            return;
+                        directories.clear();
+                        directories.addAll(dirs);
+                        photoGridAdapter.setPhotoDirectories(dirs);
+                        listAdapter.setDirectories(dirs);
+                        photoGridAdapter.notifyDataSetChanged();
+                        listAdapter.notifyDataSetChanged();
+                        adjustHeight();
+                    }
+                });
+
+        Log.d(TAG, "onResume: -----------------------------");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "onDestroyView: ------------------------------");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ------------------------------");
+        if (directories == null) {
+            return;
+        }
+
+        for (PhotoDirectory directory : directories) {
+            directory.getPhotoPaths().clear();
+            directory.getPhotos().clear();
+            directory.setPhotos(null);
+        }
+        directories.clear();
+        Logger.d("clear dir");
+        directories = null;
+    }
 }

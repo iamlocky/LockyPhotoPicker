@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class PhotoPreview {
 
-    public final static int REQUEST_CODE = 0x0000666;
+    public final static int REQUEST_CODE = 0xe666;
 
     public final static String EXTRA_CURRENT_ITEM = "current_item";
     public final static String EXTRA_PHOTOS = "photos";

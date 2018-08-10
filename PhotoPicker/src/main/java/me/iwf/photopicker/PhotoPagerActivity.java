@@ -51,7 +51,6 @@ public class PhotoPagerActivity extends AppCompatActivity {
         List<String> paths = getIntent().getStringArrayListExtra(EXTRA_PHOTOS);
         showDelete = getIntent().getBooleanExtra(EXTRA_SHOW_DELETE, true);
         int action = getIntent().getIntExtra(EXTRA_ACTION, MultiPickResultView.ACTION_ONLY_SHOW);
-        Log.d(TAG, "onCreate: " + action);
         if (pagerFragment == null) {
             pagerFragment =
                     (ImagePagerFragment) getSupportFragmentManager().findFragmentById(R.id.photoPagerFragment);
@@ -98,6 +97,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     public void onBackPressed() {
 
@@ -111,7 +111,6 @@ public class PhotoPagerActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra(KEY_SELECTED_PHOTOS, pagerFragment.getPaths());
         setResult(RESULT_OK, intent);
-        Log.i(TAG, "setDataResult: "+intent);
 
     }
 

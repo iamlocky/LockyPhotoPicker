@@ -1,11 +1,17 @@
 package me.iwf.photopicker.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import java.io.File;
@@ -14,11 +20,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static me.iwf.photopicker.utils.CommonData.pers;
+
 /**
  * Created by donglua on 15/6/23.
- *
- *
  * http://developer.android.com/training/camera/photobasics.html
+ * Update on 18/8/10
  */
 public class ImageCaptureManager {
 
@@ -30,6 +37,18 @@ public class ImageCaptureManager {
 
   public ImageCaptureManager(Context mContext) {
     this.mContext = mContext;
+    //申请sd、网络权限
+      if (Build.VERSION.SDK_INT >= 23) {
+          boolean succeed=true;
+          for (int i = 0; i <pers.length ; i++) {
+              if (ContextCompat.checkSelfPermission(mContext,pers[i])!= PackageManager.PERMISSION_GRANTED){
+                  succeed=false;
+              }
+          }
+          if (!succeed) {
+              ActivityCompat.requestPermissions((Activity)mContext, pers,0xe01);
+          }
+      }
   }
 
   private File createImageFile() throws IOException {
@@ -67,10 +86,26 @@ public class ImageCaptureManager {
       // Continue only if the File was successfully created
       if (photoFile != null) {
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-            Uri.fromFile(photoFile));
+            fileToUri(mContext,photoFile.getPath()));
       }
     }
     return takePictureIntent;
+  }
+
+    /**
+     * 兼容安卓7.+
+     * @param context
+     * @param path
+     * @return
+     */
+  public static Uri fileToUri(Context context,String path){
+    Uri uri;
+    if (Build.VERSION.SDK_INT >= 24) {
+      uri= FileProvider.getUriForFile(context, CommonData.providerAuth, new File(path));
+    }else {
+      uri=Uri.fromFile(new File(path));
+    }
+    return uri;
   }
 
 

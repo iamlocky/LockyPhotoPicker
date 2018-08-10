@@ -16,6 +16,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import me.iwf.photopicker.PhotoPickUtils;
 import me.iwf.photopicker.PhotoPreview;
@@ -57,7 +58,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         this.mContext = mContext;
         inflater = LayoutInflater.from(mContext);
         padding = dp2Px(8);
-
+        Log.d(TAG, "PhotoAdapter: "+ Arrays.toString(photoPaths.toArray()));
     }
 
     public void add(ArrayList<String> photoPaths) {

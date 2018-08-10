@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class PhotoPicker {
 
-  public static final int REQUEST_CODE             = 233;
+  public static final int REQUEST_CODE             = 0xe233;
 
   public final static int DEFAULT_MAX_COUNT        = 9;
   public final static int DEFAULT_COLUMN_NUMBER    = 3;

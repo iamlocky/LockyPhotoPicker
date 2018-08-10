@@ -27,8 +27,11 @@ public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder>
     selectedPhotos = new ArrayList<>();
   }
 
+    public void setPhotoDirectories(List<PhotoDirectory> photoDirectories) {
+        this.photoDirectories = photoDirectories;
+    }
 
-  /**
+    /**
    * Indicates if the item at position where is selected
    *
    * @param photo Photo of the item to check
@@ -83,6 +86,8 @@ public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder>
 
 
   public List<Photo> getCurrentPhotos() {
+    if (photoDirectories==null||photoDirectories.size()==0)
+      return new ArrayList<>();
     return photoDirectories.get(currentDirectoryIndex).getPhotos();
   }
 

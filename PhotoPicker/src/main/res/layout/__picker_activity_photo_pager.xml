@@ -14,7 +14,7 @@
       android:id="@+id/titlebar"
       app:mtb_title="@string/__picker_title"
       android:layout_width="match_parent"
-      android:layout_height="44dp"
+      android:layout_height="@dimen/__picker_titlebar_height"
       android:background="?attr/colorPrimary"/>
 
   <FrameLayout

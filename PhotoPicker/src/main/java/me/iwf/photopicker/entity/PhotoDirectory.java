@@ -107,4 +107,14 @@ public class PhotoDirectory {
     photos.add(new Photo(id, path));
   }
 
+  @Override
+  public String toString() {
+    return "PhotoDirectory{" +
+            "id='" + id + '\'' +
+            ", coverPath='" + coverPath + '\'' +
+            ", name='" + name + '\'' +
+            ", dateAdded=" + dateAdded +
+            ", photos=" + photos +
+            '}';
+  }
 }

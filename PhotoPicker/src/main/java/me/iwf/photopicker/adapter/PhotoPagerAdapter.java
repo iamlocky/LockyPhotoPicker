@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +13,11 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
+import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.iwf.photopicker.R;
@@ -27,10 +30,11 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     private List<String> paths = new ArrayList<>();
     private RequestManager mGlide;
-
+    private static final String TAG = "PhotoPagerAdapter";
     public PhotoPagerAdapter(RequestManager glide, List<String> paths) {
         this.paths = paths;
         this.mGlide = glide;
+        Log.d(TAG, "PhotoPagerAdapter: "+ Arrays.toString(paths.toArray()));
     }
 
     @Override
@@ -101,4 +105,9 @@ public class PhotoPagerAdapter extends PagerAdapter {
         return POSITION_NONE;
     }
 
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        Logger.d(paths);
+    }
 }

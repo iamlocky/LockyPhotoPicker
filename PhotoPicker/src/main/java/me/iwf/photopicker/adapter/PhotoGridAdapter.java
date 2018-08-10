@@ -3,18 +3,20 @@ package me.iwf.photopicker.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
+import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.iwf.photopicker.R;
@@ -29,7 +31,7 @@ import me.iwf.photopicker.utils.MediaStoreHelper;
  * Updated by LockyLuo on 18/8/2.
  */
 public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoViewHolder> {
-
+    private static final String TAG = "PhotoGridAdapter";
     private LayoutInflater inflater;
     private RequestManager glide;
 
@@ -59,7 +61,15 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
         this(context, requestManager, photoDirectories);
         setColumnNumber(context, colNum);
         setOriginalPhotos(orginalPhotos);
+        if (photoDirectories!=null){
+            Log.d(TAG, "PhotoGridAdapter: "+ Arrays.toString(photoDirectories.toArray()));
+        }
+        if (selectedPhotos!=null){
+            Log.d(TAG, "PhotoGridAdapter: "+ Arrays.toString(selectedPhotos.toArray()));
+        }
     }
+
+
 
     private void setOriginalPhotos(ArrayList<String> originalPhotos) {
         this.originalPhotos = originalPhotos;
@@ -105,7 +115,6 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
     public void onBindViewHolder(final PhotoViewHolder holder, int position) {
 
         if (getItemViewType(position) == ITEM_TYPE_PHOTO) {
-
             List<Photo> photos = getCurrentPhotos();
             final Photo photo;
 
@@ -119,8 +128,7 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
                     .override(imageSize, imageSize)
                     .placeholder(R.drawable.__picker_default_weixin)
                     .error(R.drawable.__picker_ic_broken_image_black_48dp);
-            glide
-                    .load(new File(photo.getPath()))
+            glide.load(new File(photo.getPath()))
                     .apply(options)
                     .thumbnail(0.5f)
                     .into(holder.ivPhoto);
@@ -160,7 +168,7 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
                 }
             });
 
-        } else {
+        } else {//相机
             holder.ivPhoto.setImageResource(R.drawable.__picker_camera);
         }
     }
@@ -229,9 +237,4 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
         return (hasCamera && currentDirectoryIndex == MediaStoreHelper.INDEX_ALL_PHOTOS);
     }
 
-    @Override
-    public void onViewRecycled(PhotoViewHolder holder) {
-        glide.clear(holder.ivPhoto);
-        super.onViewRecycled(holder);
-    }
 }
