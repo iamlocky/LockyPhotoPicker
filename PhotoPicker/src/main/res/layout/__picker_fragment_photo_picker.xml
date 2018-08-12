@@ -1,49 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:background="@android:color/black"
+    android:orientation="vertical">
 
-  <android.support.v7.widget.RecyclerView
-      android:id="@+id/rv_photos"
-      android:layout_width="match_parent"
-      android:gravity="center"
-      android:layout_height="match_parent"
-      />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_photos"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" />
 
 
-  <RelativeLayout
-      android:layout_alignParentBottom="true"
-      android:layout_width="match_parent"
-      android:background="#e54d4f4c"
-      android:layout_height="wrap_content"
-      >
+    <RelativeLayout
+        android:clickable="true"
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/__picker_rl_bottom_gray">
+
         <Button
-            android:layout_centerVertical="true"
             android:id="@+id/button"
-            android:text="@string/__picker_all_image"
-            android:layout_width="wrap_content"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            android:layout_height="wrap_content"
             style="@style/Widget.AppCompat.ActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:drawablePadding="5dp"
             android:drawableRight="@drawable/icon_test_list_start"
-            />
+            android:gravity="center"
+            android:text="@string/__picker_all_image"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
 
-      <Button
-          android:layout_alignParentRight="true"
-          android:layout_centerVertical="true"
-          style="@style/Widget.AppCompat.ActionButton"
-          android:textColor="@android:color/white"
-          android:id="@+id/btn_preview"
-          android:textSize="14sp"
-          android:text="@string/__picker_preview"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btn_preview"
+            style="@style/Widget.AppCompat.ActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="@string/__picker_preview"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
 
-  </RelativeLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -2,8 +2,6 @@ package me.iwf.photopicker.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -20,15 +18,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.orhanobut.logger.Logger;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import me.iwf.photopicker.PhotoPickerActivity;
@@ -42,7 +38,7 @@ import me.iwf.photopicker.event.OnItemCheckListener;
 import me.iwf.photopicker.event.OnPhotoClickListener;
 import me.iwf.photopicker.utils.ImageCaptureManager;
 import me.iwf.photopicker.utils.MediaStoreHelper;
-import me.iwf.photopicker.widget.Titlebar;
+import me.iwf.photopicker.utils.ToastUtil;
 
 import static android.app.Activity.RESULT_OK;
 import static me.iwf.photopicker.PhotoPicker.DEFAULT_COLUMN_NUMBER;
@@ -52,6 +48,7 @@ import static me.iwf.photopicker.utils.MediaStoreHelper.INDEX_ALL_PHOTOS;
 
 /**
  * Created by donglua on 15/5/31.
+ * Updated by lockyluo on 2018-08-10.
  */
 public class PhotoPickerFragment extends Fragment {
     private static final String TAG = "PhotoPickerFragment";
@@ -60,14 +57,14 @@ public class PhotoPickerFragment extends Fragment {
 
     private PopupDirectoryListAdapter listAdapter;
     //所有photos的路径
-    private static List<PhotoDirectory> directories = new ArrayList<>();
+    private List<PhotoDirectory> directories = new ArrayList<>();
     //传入的已选照片
     private ArrayList<String> originalPhotos = new ArrayList<>();
 
     private int SCROLL_THRESHOLD = 30;
     int column;
     //目录弹出框的一次最多显示的目录数目
-    public static int COUNT_MAX = 4;
+    public static int COUNT_MAX = 5;
     private final static String EXTRA_CAMERA = "camera";
     private final static String EXTRA_COLUMN = "column";
     private final static String EXTRA_COUNT = "count";
@@ -113,7 +110,7 @@ public class PhotoPickerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setRetainInstance(true);
+//        setRetainInstance(true);
 
         mGlideRequestManager = Glide.with(this);
 
@@ -142,7 +139,6 @@ public class PhotoPickerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.__picker_fragment_photo_picker, container, false);
-        Logger.d("onCreateView");
         listAdapter = new PopupDirectoryListAdapter(mGlideRequestManager, directories);
         getPhotoGridAdapter().setOnItemCheckListener(onItemCheckListener);
 
@@ -153,23 +149,23 @@ public class PhotoPickerFragment extends Fragment {
         recyclerView.setAdapter(photoGridAdapter);
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
+        final RelativeLayout rlBottom=rootView.findViewById(R.id.rl_bottom);
         final Button btSwitchDirectory = (Button) rootView.findViewById(R.id.button);
 
-        Button btnPreview = (Button) rootView.findViewById(R.id.btn_preview);
+        final Button btnPreview = (Button) rootView.findViewById(R.id.btn_preview);
 
         listPopupWindow = new ListPopupWindow(getActivity());
 
-        listPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//替换背景
+//        listPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//替换背景
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         int widths = wm.getDefaultDisplay().getWidth();
         listPopupWindow.setWidth(widths);//ListPopupWindow.MATCH_PARENT还是会有边距，直接拿到屏幕宽度来设置也不行，因为默认的background有左右padding值。
 
-        listPopupWindow.setAnchorView(btSwitchDirectory);
+        listPopupWindow.setAnchorView(rlBottom);
         listPopupWindow.setAdapter(listAdapter);
         listPopupWindow.setModal(true);
-
         listPopupWindow.setDropDownGravity(Gravity.BOTTOM);
+
         listPopupWindow.setAnimationStyle(R.style.__picker_mystyle);
 
         listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -179,7 +175,7 @@ public class PhotoPickerFragment extends Fragment {
 
                 PhotoDirectory directory = directories.get(position);
 
-                btSwitchDirectory.setText(directory.getName().toLowerCase());//默认会大写，这里要改成小写
+                btSwitchDirectory.setText(directory.getName());
 
                 photoGridAdapter.setCurrentDirectoryIndex(position);
                 photoGridAdapter.notifyDataSetChanged();
@@ -206,12 +202,7 @@ public class PhotoPickerFragment extends Fragment {
         photoGridAdapter.setOnCameraClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    Intent intent = captureManager.dispatchTakePictureIntent();
-                    startActivityForResult(intent, ImageCaptureManager.REQUEST_TAKE_PHOTO);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                launchCamera();
             }
         });
 
@@ -224,8 +215,7 @@ public class PhotoPickerFragment extends Fragment {
                 } else if (!getActivity().isFinishing()) {
                     adjustHeight();
                     listPopupWindow.show();
-                    listPopupWindow.getListView().setVerticalScrollBarEnabled(false);
-
+//                    listPopupWindow.getListView().setVerticalScrollBarEnabled(false);
                     //去掉滑动条,listview 在show之后才建立，所以需要该方法在show之后调用，否则会空指针
                 }
             }
@@ -242,7 +232,7 @@ public class PhotoPickerFragment extends Fragment {
                             .setCurrentItem(0)
                             .start(getActivity());
                 } else {
-                    Toast.makeText(getActivity(), R.string.__picker_has_no_photo, Toast.LENGTH_SHORT).show();
+                    ToastUtil.show(getString(R.string.__picker_has_no_photo));
                 }
             }
         });
@@ -286,6 +276,15 @@ public class PhotoPickerFragment extends Fragment {
         }
     }
 
+    public void launchCamera() {//已适配Android 7.+
+        try {
+            Intent intent = captureManager.dispatchTakePictureIntent();
+            startActivityForResult(intent, ImageCaptureManager.REQUEST_TAKE_PHOTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public PhotoGridAdapter getPhotoGridAdapter() {
         return photoGridAdapter;
@@ -321,30 +320,25 @@ public class PhotoPickerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause: ");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop: ");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (getActivity()==null){
-            Logger.d("getActivity is null");
-        }
+
         MediaStoreHelper.getPhotoDirs(getActivity(), mediaStoreArgs,
                 new MediaStoreHelper.PhotosResultCallback() {
                     @Override
                     public void onResultCallback(List<PhotoDirectory> dirs) {
-                        Log.e(TAG, "onResultCallback: " + dirs+ " ");
-                        if (dirs.size()==1)
+                        if (dirs.size() <= 1)
                             return;
                         directories.clear();
-                        directories.addAll(dirs);
+                        directories = dirs;
                         photoGridAdapter.setPhotoDirectories(dirs);
                         listAdapter.setDirectories(dirs);
                         photoGridAdapter.notifyDataSetChanged();
@@ -353,19 +347,12 @@ public class PhotoPickerFragment extends Fragment {
                     }
                 });
 
-        Log.d(TAG, "onResume: -----------------------------");
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(TAG, "onDestroyView: ------------------------------");
-    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy: ------------------------------");
         if (directories == null) {
             return;
         }
@@ -376,7 +363,6 @@ public class PhotoPickerFragment extends Fragment {
             directory.setPhotos(null);
         }
         directories.clear();
-        Logger.d("clear dir");
         directories = null;
     }
 }

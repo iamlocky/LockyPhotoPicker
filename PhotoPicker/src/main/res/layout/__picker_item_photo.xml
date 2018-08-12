@@ -32,7 +32,7 @@
       android:layout_alignParentTop="true"
       android:layout_alignParentRight="true"
       android:clickable="true"
-      android:padding="5dp"
+      android:padding="8dp"
       android:id="@+id/v_selected"
       android:src="@drawable/__picker_checkbox_bg"
       android:layout_width="wrap_content"

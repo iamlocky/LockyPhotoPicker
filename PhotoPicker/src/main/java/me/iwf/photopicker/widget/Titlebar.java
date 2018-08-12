@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -22,7 +23,7 @@ import me.iwf.photopicker.R;
 public class Titlebar extends FrameLayout {
     private RelativeLayout rootView;
     private TextView tvLeft;
-    private ImageView ivLeft;
+    private AppCompatImageView ivLeft;
 
     public TextView getTvTitle() {
         return tvTitle;
@@ -204,13 +205,13 @@ public class Titlebar extends FrameLayout {
 
     private void initView(Context context) {
         rootView = (RelativeLayout) View.inflate(context, R.layout.view_titlebar, null);
-        ivLeft = (ImageView) rootView.findViewById(R.id.iv_left);
-        tvLeft = (TextView) rootView.findViewById(R.id.tv_left);
+        ivLeft = rootView.findViewById(R.id.iv_left);
+        tvLeft = rootView.findViewById(R.id.tv_left);
 
-        tvTitle = (TextView) rootView.findViewById(R.id.tv_title);
+        tvTitle = rootView.findViewById(R.id.tv_title);
 
-        ivRight = (ImageView) rootView.findViewById(R.id.iv_right);
-        tvRight = (TextView) rootView.findViewById(R.id.tv_right);
+        ivRight = rootView.findViewById(R.id.iv_right);
+        tvRight = rootView.findViewById(R.id.tv_right);
         this.addView(rootView);
 
     }

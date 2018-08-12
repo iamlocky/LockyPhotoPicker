@@ -1,33 +1,36 @@
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion 27
-  resourcePrefix "__picker_"
+    compileSdkVersion 27
+    resourcePrefix "__picker_"
 
-  defaultConfig {
-    minSdkVersion 14
-    targetSdkVersion 27
-    versionCode 1
-    versionName "1.0.1"
-  }
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0.1"
+        vectorDrawables.useSupportLibrary = true
+    }
 }
 apply from: '../gradle/gradle-mvn-push.gradle'
 
 repositories {
-  jcenter()
-  mavenCentral()  // GPUImage for Android
+    jcenter()
+    mavenCentral()  // GPUImage for Android
 }
 
 dependencies {
-  implementation 'com.android.support:support-v4:27.+'
-  implementation 'com.android.support:appcompat-v7:27.+'
-  implementation 'com.android.support:design:27.+'
-  implementation 'com.android.support:recyclerview-v7:27.+'
-  implementation 'com.android.support:support-annotations:26.+'
-  implementation 'com.nineoldandroids:library:2.4.0'
-  implementation 'com.github.bumptech.glide:glide:4.+'
-  implementation 'jp.wasabeef:glide-transformations:2.+'
-  implementation 'com.orhanobut:logger:2.1.1'
+    implementation 'com.android.support:support-v4:27.+'
+    implementation 'com.android.support:appcompat-v7:27.+'
+    implementation 'com.android.support:design:27.+'
+    implementation 'com.android.support:recyclerview-v7:27.+'
+    implementation 'com.android.support:support-annotations:26.+'
+    implementation 'com.nineoldandroids:library:2.+'
+    implementation 'com.github.bumptech.glide:glide:4.+'
+    implementation 'jp.wasabeef:glide-transformations:2.+'
+    implementation 'com.orhanobut:logger:2.+'
+    implementation 'com.google.code.gson:gson:2.+'
 
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.+'
 }
 

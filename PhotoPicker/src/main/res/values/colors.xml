@@ -7,7 +7,7 @@
   <color name="__picker_common_primary">#f3f3f3</color>
 
   <color name="__picker_text_40">#282828</color>
-  <color name="__picker_text_80">#505050</color>
+  <color name="__picker_text_80">#737373</color>
   <color name="__picker_text_120">#787878</color>
   <color name="__picker_item_photo_border_selected">#ff99cc00</color>
   <color name="__picker_item_photo_border_n">#33ffffff</color>
@@ -16,5 +16,6 @@
 
   <color name="__picker_item_unselected_center">#00000000</color><!--100%透明度-->
   <color name="__picker_item_unselected_border">#40000000</color><!--25%透明度-->
-
+  <color name="__picker_gray_light">#cecece</color>
+  <color name="__picker_rl_bottom_gray">#e54d4f4c</color>
 </resources>

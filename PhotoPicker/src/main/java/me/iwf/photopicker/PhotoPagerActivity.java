@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,9 +27,11 @@ import static me.iwf.photopicker.PhotoPreview.EXTRA_SHOW_DELETE;
 /**
  * Created by donglua on 15/6/24.
  * Updated by LockyLuo on 18/8/3.
- *
- * */
+ */
 public class PhotoPagerActivity extends AppCompatActivity {
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
 
     private ImagePagerFragment pagerFragment;
     private static final String TAG = "PhotoPagerActivity";
@@ -41,7 +44,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
 
         setContentView(R.layout.__picker_activity_photo_pager);
         try {
-            if (getSupportActionBar()!=null) {
+            if (getSupportActionBar() != null) {
                 getSupportActionBar().hide();
             }
         } catch (Exception e) {
@@ -107,7 +110,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void setDataResult(){
+    private void setDataResult() {
         Intent intent = new Intent();
         intent.putExtra(KEY_SELECTED_PHOTOS, pagerFragment.getPaths());
         setResult(RESULT_OK, intent);
@@ -126,55 +129,55 @@ public class PhotoPagerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void deletePic(){
+    public void deletePic() {
         final int index = pagerFragment.getCurrentItem();
-            final String deletedPath = pagerFragment.getPaths().get(index);
+        final String deletedPath = pagerFragment.getPaths().get(index);
 
-            Snackbar snackbar = Snackbar.make(pagerFragment.getView(), R.string.__picker_deleted_a_photo,
-                    Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(pagerFragment.getView(), R.string.__picker_deleted_a_photo,
+                Snackbar.LENGTH_LONG);
 
-            if (pagerFragment.getPaths().size() <= 1) {
+        if (pagerFragment.getPaths().size() <= 1) {
 
-                // show confirm dialog
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.__picker_confirm_to_delete)
-                        .setPositiveButton(R.string.__picker_yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                                pagerFragment.getPaths().remove(index);
-                                pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
-                                onBackPressed();
-                            }
-                        })
-                        .setNegativeButton(R.string.__picker_cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        })
-                        .show();
+            // show confirm dialog
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.__picker_confirm_to_delete)
+                    .setPositiveButton(R.string.__picker_yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            pagerFragment.getPaths().remove(index);
+                            pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
+                            onBackPressed();
+                        }
+                    })
+                    .setNegativeButton(R.string.__picker_cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .show();
 
-            } else {
+        } else {
 
-                snackbar.show();
+            snackbar.show();
 
-                pagerFragment.getPaths().remove(index);
-                pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
-            }
+            pagerFragment.getPaths().remove(index);
+            pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
+        }
 
-            snackbar.setAction(R.string.__picker_undo, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (pagerFragment.getPaths().size() > 0) {
-                        pagerFragment.getPaths().add(index, deletedPath);
-                    } else {
-                        pagerFragment.getPaths().add(deletedPath);
-                    }
-                    pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
-                    pagerFragment.getViewPager().setCurrentItem(index, true);
+        snackbar.setAction(R.string.__picker_undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (pagerFragment.getPaths().size() > 0) {
+                    pagerFragment.getPaths().add(index, deletedPath);
+                } else {
+                    pagerFragment.getPaths().add(deletedPath);
                 }
-            });
+                pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
+                pagerFragment.getViewPager().setCurrentItem(index, true);
+            }
+        });
     }
 
 

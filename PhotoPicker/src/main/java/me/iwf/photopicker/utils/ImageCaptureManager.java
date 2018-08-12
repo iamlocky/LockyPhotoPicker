@@ -14,11 +14,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import me.iwf.photopicker.R;
 
 import static me.iwf.photopicker.utils.CommonData.pers;
 
@@ -29,115 +32,118 @@ import static me.iwf.photopicker.utils.CommonData.pers;
  */
 public class ImageCaptureManager {
 
-  private final static String CAPTURED_PHOTO_PATH_KEY = "mCurrentPhotoPath";
-  public static final int REQUEST_TAKE_PHOTO = 1;
+    private final static String CAPTURED_PHOTO_PATH_KEY = "mCurrentPhotoPath";
+    public static final int REQUEST_TAKE_PHOTO = 1;
 
-  private String mCurrentPhotoPath;
-  private Context mContext;
+    private String mCurrentPhotoPath;
+    private Context mContext;
 
-  public ImageCaptureManager(Context mContext) {
-    this.mContext = mContext;
-    //申请sd、网络权限
-      if (Build.VERSION.SDK_INT >= 23) {
-          boolean succeed=true;
-          for (int i = 0; i <pers.length ; i++) {
-              if (ContextCompat.checkSelfPermission(mContext,pers[i])!= PackageManager.PERMISSION_GRANTED){
-                  succeed=false;
-              }
-          }
-          if (!succeed) {
-              ActivityCompat.requestPermissions((Activity)mContext, pers,0xe01);
-          }
-      }
-  }
-
-  private File createImageFile() throws IOException {
-    // Create an image file name
-    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
-    String imageFileName = "JPEG_" + timeStamp + ".jpg";
-    File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
-    if (!storageDir.exists()) {
-      if (!storageDir.mkdir()) {
-        Log.e("TAG", "Throwing Errors....");
-        throw new IOException();
-      }
+    public ImageCaptureManager(Context mContext) {
+        this.mContext = mContext;
+        //申请sd、网络权限
+        if (Build.VERSION.SDK_INT >= 23) {
+            boolean succeed = true;
+            for (int i = 0; i < pers.length; i++) {
+                if (ContextCompat.checkSelfPermission(mContext, pers[i]) != PackageManager.PERMISSION_GRANTED) {
+                    succeed = false;
+                }
+            }
+            if (!succeed) {
+                ActivityCompat.requestPermissions((Activity) mContext, pers, 0xe01);
+            }
+        }
     }
 
-    File image = new File(storageDir, imageFileName);
-    //                File.createTempFile(
-    //                imageFileName,  /* prefix */
-    //                ".jpg",         /* suffix */
-    //                storageDir      /* directory */
-    //        );
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + ".jpg";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
-    // Save a file: path for use with ACTION_VIEW intents
-    mCurrentPhotoPath = image.getAbsolutePath();
-    return image;
-  }
+        if (!storageDir.exists()) {
+            if (!storageDir.mkdir()) {
+                Log.e("TAG", "Throwing Errors....");
+                throw new IOException();
+            }
+        }
 
+        File image = new File(storageDir, imageFileName);
+        //                File.createTempFile(
+        //                imageFileName,  /* prefix */
+        //                ".jpg",         /* suffix */
+        //                storageDir      /* directory */
+        //        );
 
-  public Intent dispatchTakePictureIntent() throws IOException {
-    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    // Ensure that there's a camera activity to handle the intent
-    if (takePictureIntent.resolveActivity(mContext.getPackageManager()) != null) {
-      // Create the File where the photo should go
-      File photoFile = createImageFile();
-      // Continue only if the File was successfully created
-      if (photoFile != null) {
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-            fileToUri(mContext,photoFile.getPath()));
-      }
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
-    return takePictureIntent;
-  }
+
+
+    public Intent dispatchTakePictureIntent() throws IOException {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(mContext.getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = createImageFile();
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        fileToUri(mContext, photoFile.getPath()));
+            }
+        }
+        takePictureIntent=Intent.createChooser(takePictureIntent,mContext.getString(R.string.__picker_select_camera));
+        return takePictureIntent;
+    }
 
     /**
      * 兼容安卓7.+
+     *
      * @param context
      * @param path
      * @return
      */
-  public static Uri fileToUri(Context context,String path){
-    Uri uri;
-    if (Build.VERSION.SDK_INT >= 24) {
-      uri= FileProvider.getUriForFile(context, CommonData.providerAuth, new File(path));
-    }else {
-      uri=Uri.fromFile(new File(path));
-    }
-    return uri;
-  }
-
-
-  public void galleryAddPic() {
-    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-
-    if (TextUtils.isEmpty(mCurrentPhotoPath)) {
-      return;
+    public static Uri fileToUri(Context context, String path) {
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= 24) {
+            uri = FileProvider.getUriForFile(context, CommonData.providerAuth, new File(path));
+        } else {
+            uri = Uri.fromFile(new File(path));
+        }
+        return uri;
     }
 
-    File f = new File(mCurrentPhotoPath);
-    Uri contentUri = Uri.fromFile(f);
-    mediaScanIntent.setData(contentUri);
-    mContext.sendBroadcast(mediaScanIntent);
-  }
 
+    public void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 
-  public String getCurrentPhotoPath() {
-    return mCurrentPhotoPath;
-  }
+        if (TextUtils.isEmpty(mCurrentPhotoPath)) {
+            return;
+        }
 
-
-  public void onSaveInstanceState(Bundle savedInstanceState) {
-    if (savedInstanceState != null && mCurrentPhotoPath != null) {
-      savedInstanceState.putString(CAPTURED_PHOTO_PATH_KEY, mCurrentPhotoPath);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        mContext.sendBroadcast(mediaScanIntent);
     }
-  }
 
-  public void onRestoreInstanceState(Bundle savedInstanceState) {
-    if (savedInstanceState != null && savedInstanceState.containsKey(CAPTURED_PHOTO_PATH_KEY)) {
-      mCurrentPhotoPath = savedInstanceState.getString(CAPTURED_PHOTO_PATH_KEY);
+
+    public String getCurrentPhotoPath() {
+        return mCurrentPhotoPath;
     }
-  }
+
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null && mCurrentPhotoPath != null) {
+            savedInstanceState.putString(CAPTURED_PHOTO_PATH_KEY, mCurrentPhotoPath);
+        }
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(CAPTURED_PHOTO_PATH_KEY)) {
+            mCurrentPhotoPath = savedInstanceState.getString(CAPTURED_PHOTO_PATH_KEY);
+        }
+    }
 
 }

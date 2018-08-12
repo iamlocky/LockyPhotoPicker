@@ -12,15 +12,20 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 import me.iwf.photopicker.PhotoPickUtils;
 import me.iwf.photopicker.PhotoPreview;
+import me.iwf.photopicker.PickerApp;
 import me.iwf.photopicker.R;
+import me.iwf.photopicker.utils.ImageCaptureManager;
+import me.iwf.photopicker.utils.ToastUtil;
 
 /**
  * Created by donglua on 15/5/31.
@@ -28,12 +33,14 @@ import me.iwf.photopicker.R;
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
     private ArrayList<String> photoPaths;
+    private LinkedHashSet<String> photoSet=new LinkedHashSet<>();
     private LayoutInflater inflater;
 
     private Context mContext;
     private RequestOptions options = new RequestOptions().dontAnimate();
 
     private static final String TAG = "PhotoAdapter";
+    private int padding;
 
     public void setAction(@MultiPickResultView.MultiPicAction int action) {
         this.action = action;
@@ -70,9 +77,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     public void refresh(ArrayList<String> photoPaths) {
+        photoSet.clear();
+        photoSet.addAll(this.photoPaths);
         this.photoPaths.clear();
+
         if (photoPaths != null && photoPaths.size() > 0) {
-            this.photoPaths.addAll(photoPaths);
+            photoSet.addAll(photoPaths);
+            this.photoPaths.addAll(photoSet);
         } else {
             Log.e(TAG, "refresh: photoPaths is null");
         }
@@ -93,7 +104,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         return px;
     }
 
-    int padding;
 
     @Override
     public void onBindViewHolder(final PhotoViewHolder holder, final int position) {
@@ -107,18 +117,15 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                         .placeholder(R.drawable.icon_pic_default)
                         .error(R.drawable.icon_pic_default);
                 Glide.with(mContext)
-                        .load("")
+                        .load(R.drawable.__picker_add_image)
                         .thumbnail(0.1f)
                         .apply(options)
                         .into(holder.ivPhoto);
                 holder.ivPhoto.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (photoPaths != null && photoPaths.size() == maxCount) {
-                            Toast.makeText(mContext, "已选了" + maxCount + "张图片", Toast.LENGTH_SHORT).show();
-                        } else {
-                            PhotoPickUtils.startPick((Activity) mContext, false, maxCount, photoPaths);
-                        }
+                        startPicker(false);
+
                     }
                 });
 
@@ -126,13 +133,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
             } else {
                 String pathStr = photoPaths.get(position);
-                Log.e("file", pathStr);
                 Uri uri;
 
                 if (pathStr.startsWith("http")) {
                     uri = Uri.parse(pathStr);
                 } else {
-                    uri = Uri.fromFile(new File(pathStr));
+                    uri = ImageCaptureManager.fileToUri(mContext,pathStr);
                 }
                 options = options
                         .centerCrop()
@@ -169,7 +175,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         } else if (action == MultiPickResultView.ACTION_ONLY_SHOW) {
 
             Log.d("pic", photoPaths.get(position));
-            options = options.placeholder(R.drawable.__picker_default_weixin)
+            options = options
+                    .placeholder(R.drawable.__picker_default_weixin)
                     .centerInside()
                     .error(R.drawable.__picker_ic_broken_image_black_48dp);
 
@@ -198,6 +205,19 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         return action == MultiPickResultView.ACTION_SELECT ? photoPaths.size() + 1 : photoPaths.size();
     }
 
+    public void startPicker(boolean launchCamera){
+        if (photoPaths != null && photoPaths.size() == maxCount) {
+            ToastUtil.show("已选了" + maxCount + "张图片");
+        } else {
+            PhotoPickUtils.startPick((Activity) mContext, false,launchCamera, maxCount-photoPaths.size(), new ArrayList<String>());
+        }
+    }
+
+    public void setPhotoPaths(ArrayList<String> photoPaths) {
+        this.photoPaths.clear();
+        this.photoPaths.addAll(photoPaths);
+        notifyDataSetChanged();
+    }
 
     public static class PhotoViewHolder extends RecyclerView.ViewHolder {
         private ImageView ivPhoto;

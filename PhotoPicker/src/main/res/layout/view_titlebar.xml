@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/__picker_titlebar_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="ResourceName">
-    <!--?attr/colorPrimary-->
 
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
        android:scaleType="centerInside"
         android:id="@+id/iv_left"
-        android:src="@drawable/arrow_back"
+        android:padding="12dp"
+        app:srcCompat="@drawable/__picker_back"
         android:layout_centerVertical="true"
         android:layout_width="@dimen/__picker_titlebar_height"
         android:layout_alignParentLeft="true"

@@ -31,10 +31,12 @@ public class PhotoPagerAdapter extends PagerAdapter {
     private List<String> paths = new ArrayList<>();
     private RequestManager mGlide;
     private static final String TAG = "PhotoPagerAdapter";
+
     public PhotoPagerAdapter(RequestManager glide, List<String> paths) {
-        this.paths = paths;
+        if (paths != null) {
+            this.paths = paths;
+        }
         this.mGlide = glide;
-        Log.d(TAG, "PhotoPagerAdapter: "+ Arrays.toString(paths.toArray()));
     }
 
     @Override

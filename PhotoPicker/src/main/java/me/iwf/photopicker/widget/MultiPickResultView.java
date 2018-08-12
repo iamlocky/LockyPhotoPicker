@@ -4,11 +4,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -21,12 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.iwf.photopicker.PhotoPickUtils;
+import me.iwf.photopicker.utils.ImageCaptureManager;
+import me.iwf.photopicker.utils.ToastUtil;
 
 /**
  * Updated by LockyLuo on 18/8/3.
  */
 public class MultiPickResultView extends FrameLayout {
-
+    private static final String TAG = "MultiPickResultView";
     @IntDef({ACTION_SELECT, ACTION_ONLY_SHOW})
 
     //Tell the compiler not to store annotation data in the .class file
@@ -86,7 +90,7 @@ public class MultiPickResultView extends FrameLayout {
     private void initView(Context context, AttributeSet attrs) {
 
         recyclerView = new android.support.v7.widget.RecyclerView(context, attrs);
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(4, OrientationHelper.VERTICAL));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
         this.addView(recyclerView);
     }
 
@@ -122,7 +126,17 @@ public class MultiPickResultView extends FrameLayout {
             selectedPhotos.addAll(paths);
             photoAdapter.notifyDataSetChanged();
         }
+    }
 
+    /**
+     * 一键启动相机
+     */
+    public void launchCamera(){
+        if (photoAdapter!=null){
+            photoAdapter.startPicker(true);
+        }else {
+            Log.e(TAG, "launchCamera: photoAdapter is null",new Throwable());
+        }
     }
 
 
@@ -136,12 +150,13 @@ public class MultiPickResultView extends FrameLayout {
 
                 @Override
                 public void onPreviewBack(ArrayList<String> photos) {
-                    photoAdapter.refresh(photos);
+                    photoAdapter.setPhotoPaths(photos);
                 }
 
                 @Override
                 public void onPickFail(String error) {
-                    Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+                    ToastUtil.show(error);
+
                     selectedPhotos.clear();
                     photoAdapter.notifyDataSetChanged();
                 }
@@ -154,10 +169,26 @@ public class MultiPickResultView extends FrameLayout {
 
     }
 
-
+    /**
+     * 获取真实路径地址
+     * @return
+     */
     public List<String> getPhotos() {
         return selectedPhotos;
     }
 
+    /**
+     * 获取uri地址
+     * @return
+     */
+    public List<Uri> getPhotosUri(){
+        List<Uri> uriList=new ArrayList<>();
+        if (selectedPhotos!=null){
+            for (int i = 0; i < selectedPhotos.size(); i++) {
+                uriList.add(ImageCaptureManager.fileToUri(getContext(),selectedPhotos.get(i)));
+            }
+        }
+        return uriList;
+    }
 
 }
