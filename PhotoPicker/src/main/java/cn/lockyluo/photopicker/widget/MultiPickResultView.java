@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lockyluo.photopicker.PhotoPickUtils;
+import cn.lockyluo.photopicker.PickerApp;
+import cn.lockyluo.photopicker.utils.CommonData;
 import cn.lockyluo.photopicker.utils.ImageCaptureManager;
 import cn.lockyluo.photopicker.utils.ToastUtil;
 
@@ -72,6 +74,9 @@ public class MultiPickResultView extends FrameLayout {
 
     public MultiPickResultView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        if (PickerApp.getInstance()==null){
+            PickerApp.init(context.getApplicationContext());
+        }
         initView(context, attrs);
         initData(context, attrs);
         initEvent(context, attrs);
@@ -132,6 +137,7 @@ public class MultiPickResultView extends FrameLayout {
     public void init(Activity context, int maxCount, @MultiPicAction int action, List<String> photos) {
         this.action = action;
         this.maxCount = maxCount;
+
         if (action == MultiPickResultView.ACTION_ONLY_SHOW) {//当只用作显示图片时,一行显示3张
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
         }

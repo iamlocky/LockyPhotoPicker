@@ -106,7 +106,7 @@ public class ImageCaptureManager {
     public static Uri fileToUri(Context context, String path) {
         Uri uri;
         if (Build.VERSION.SDK_INT >= 24) {
-            uri = PickerFileProvider.getUriForFile(context, CommonData.providerAuth, new File(path));
+            uri = PickerFileProvider.getUriForFile(context, new File(path));
         } else {
             uri = Uri.fromFile(new File(path));
         }

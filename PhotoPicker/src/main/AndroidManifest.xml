@@ -5,10 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <application android:name=".PickerApp">
+    <application >
         <provider
             android:name=".utils.PickerFileProvider"
-            android:authorities="cn.lockyluo.photopicker.fileProvider"
+            android:authorities="${applicationId}.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

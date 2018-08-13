@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import cn.lockyluo.photopicker.PickerApp;
 import cn.lockyluo.photopicker.R;
 
 /**
@@ -69,6 +70,9 @@ public class Titlebar extends FrameLayout {
 
     public Titlebar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        if (PickerApp.getInstance()==null){
+            PickerApp.init(context.getApplicationContext());
+        }
         initView(context);
         initData(context, attrs, defStyleAttr);
         initEvent(context, attrs, defStyleAttr);
