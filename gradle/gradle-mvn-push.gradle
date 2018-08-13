@@ -1,10 +1,10 @@
 
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.8.5"
-def siteUrl = 'https://github.com/donglua/PhotoPicker'      // Homepage URL of the library
-def gitUrl  = 'https://github.com/donglua/PhotoPicker.git'  // Git repository URL
-group = "me.iwf.photopicker"                                // Maven Group ID for the artifact
+version = "1.0.2"
+def siteUrl = 'https://github.com/iamlocky/LockyPhotoPicker'      // Homepage URL of the library
+def gitUrl  = 'https://github.com/iamlocky/LockyPhotoPicker.git'  // Git repository URL
+group = "cn.lockyluo.photopicker"                                // Maven Group ID for the artifact
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

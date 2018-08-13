@@ -1,42 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<me.iwf.photopicker.widget.SquareItemLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<cn.lockyluo.photopicker.widget.SquareItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-  <ImageView
-      android:padding="1dp"
-      android:layout_gravity="center"
-      android:id="@+id/iv_photo"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:adjustViewBounds="true"
-      />
-  <!--仿微信的蒙版-->
-  <View
-      android:id="@+id/cover"
-      android:background="@drawable/__picker_photo_bg"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"/>
+    android:layout_height="match_parent">
 
-  <View
-      android:visibility="gone"
-      android:id="@+id/v_delete"
-      android:background="@drawable/icon_delete"
-      android:layout_alignParentRight="true"
-      android:layout_width="20dp"
-      android:layout_height="20dp"/>
+    <ImageView
+        android:id="@+id/iv_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:padding="1dp" />
+    <!--仿微信的蒙版-->
+    <View
+        android:id="@+id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/__picker_photo_bg" />
 
-  <ImageView
-      android:layout_margin="5dp"
-      android:layout_alignParentTop="true"
-      android:layout_alignParentRight="true"
-      android:clickable="true"
-      android:padding="8dp"
-      android:id="@+id/v_selected"
-      android:src="@drawable/__picker_checkbox_bg"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      />
+    <View
+        android:id="@+id/v_delete"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/icon_delete"
+        android:visibility="gone" />
 
-</me.iwf.photopicker.widget.SquareItemLayout>
+    <ImageView
+        android:id="@+id/v_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="5dp"
+        android:clickable="true"
+        android:padding="8dp"
+        android:src="@drawable/__picker_checkbox_bg" />
+
+</cn.lockyluo.photopicker.widget.SquareItemLayout>

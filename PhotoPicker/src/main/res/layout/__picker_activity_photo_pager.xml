@@ -10,7 +10,7 @@
     >
     <!--tools:context="${relativePackage}.${activityClass}"-->
   <!--<include layout="@layout/__picker_toolbar"/>-->
-  <me.iwf.photopicker.widget.Titlebar
+  <cn.lockyluo.photopicker.widget.Titlebar
       android:id="@+id/titlebar"
       app:mtb_title="@string/__picker_title"
       android:layout_width="match_parent"
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/photoPagerFragment"
-        android:name="me.iwf.photopicker.fragment.ImagePagerFragment"
+        android:name="cn.lockyluo.photopicker.fragment.ImagePagerFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/__picker_picker_fragment_image_pager" />

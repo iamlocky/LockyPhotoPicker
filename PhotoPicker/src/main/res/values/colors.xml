@@ -17,5 +17,6 @@
   <color name="__picker_item_unselected_center">#00000000</color><!--100%透明度-->
   <color name="__picker_item_unselected_border">#40000000</color><!--25%透明度-->
   <color name="__picker_gray_light">#cecece</color>
+  <color name="__picker_gray_f2f">#f2f2f2</color>
   <color name="__picker_rl_bottom_gray">#e54d4f4c</color>
 </resources>

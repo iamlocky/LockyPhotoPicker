@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.iwf.photopicker">
+    package="cn.lockyluo.photopicker">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application android:name=".PickerApp">
         <provider
-            android:name=".PickerFileProvider"
-            android:authorities="photoPicker.fileProvider"
+            android:name=".utils.PickerFileProvider"
+            android:authorities="cn.lockyluo.photopicker.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -17,8 +17,8 @@
         </provider>
 
         <activity
-            android:name="me.iwf.photopicker.PhotoPickerActivity"/>
+            android:name="cn.lockyluo.photopicker.PhotoPickerActivity"/>
         <activity
-            android:name="me.iwf.photopicker.PhotoPagerActivity"/>
+            android:name="cn.lockyluo.photopicker.PhotoPagerActivity"/>
     </application>
 </manifest>

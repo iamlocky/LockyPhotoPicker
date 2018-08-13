@@ -8,7 +8,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0.1"
+        versionName "1.0.2"
         vectorDrawables.useSupportLibrary = true
     }
 }
@@ -20,16 +20,13 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.android.support:support-v4:27.+'
-    implementation 'com.android.support:appcompat-v7:27.+'
-    implementation 'com.android.support:design:27.+'
-    implementation 'com.android.support:recyclerview-v7:27.+'
-    implementation 'com.android.support:support-annotations:26.+'
-    implementation 'com.nineoldandroids:library:2.+'
-    implementation 'com.github.bumptech.glide:glide:4.+'
-    implementation 'jp.wasabeef:glide-transformations:2.+'
-    implementation 'com.orhanobut:logger:2.+'
-    implementation 'com.google.code.gson:gson:2.+'
+    implementation "com.android.support:support-v4:${support_ver}"
+    implementation "com.android.support:appcompat-v7:${support_ver}"
+    implementation "com.android.support:design:${support_ver}"
+    implementation "com.android.support:recyclerview-v7:${support_ver}"
+    implementation "com.android.support:support-annotations:${support_ver}"
+    implementation "com.github.bumptech.glide:glide:4.+"
+
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.+'
 }

@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
   <!--<include layout="@layout/__picker_toolbar" />-->
-  <me.iwf.photopicker.widget.Titlebar
+  <cn.lockyluo.photopicker.widget.Titlebar
       android:id="@+id/titlebar"
       app:mtb_title="@string/__picker_title"
       app:mtb_rightTxt="@string/__picker_done"

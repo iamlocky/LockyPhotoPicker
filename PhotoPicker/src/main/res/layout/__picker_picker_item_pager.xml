@@ -7,7 +7,7 @@
     <!--android:fillViewport="true"-->
     <!--&gt;-->
 
-  <me.iwf.photopicker.widget.TouchImageView
+  <cn.lockyluo.photopicker.widget.TouchImageView
       xmlns:android="http://schemas.android.com/apk/res/android"
       android:gravity="center"
       android:layout_width="match_parent"
