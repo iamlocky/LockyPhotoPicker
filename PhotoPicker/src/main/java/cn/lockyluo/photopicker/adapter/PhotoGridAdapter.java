@@ -60,12 +60,6 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
         this(context, requestManager, photoDirectories);
         setColumnNumber(context, colNum);
         setOriginalPhotos(orginalPhotos);
-        if (photoDirectories!=null){
-            Log.d(TAG, "PhotoGridAdapter: "+ Arrays.toString(photoDirectories.toArray()));
-        }
-        if (selectedPhotos!=null){
-            Log.d(TAG, "PhotoGridAdapter: "+ Arrays.toString(selectedPhotos.toArray()));
-        }
     }
 
 

@@ -9,7 +9,6 @@ import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -245,7 +244,6 @@ public class PhotoPickerFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                // Log.d(">>> Picker >>>", "dy = " + dy);
                 if (Math.abs(dy) > SCROLL_THRESHOLD) {
                     mGlideRequestManager.pauseRequests();
                 } else {
@@ -260,7 +258,6 @@ public class PhotoPickerFragment extends Fragment {
                 }
             }
         });
-        Log.d(TAG, "onCreateView: ");
         return rootView;
     }
 

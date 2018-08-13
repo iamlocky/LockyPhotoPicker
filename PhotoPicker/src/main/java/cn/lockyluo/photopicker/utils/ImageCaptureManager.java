@@ -121,7 +121,7 @@ public class ImageCaptureManager {
             return;
         }
 
-        Uri contentUri = fileToUri(mContext,mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(new File(mCurrentPhotoPath));
         mediaScanIntent.setData(contentUri);
         mContext.sendBroadcast(mediaScanIntent);
     }
