@@ -176,31 +176,29 @@ public class MultiPickResultView extends FrameLayout {
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (action == ACTION_SELECT) {
-            PhotoPickUtils.onActivityResult(requestCode, resultCode, data, new PhotoPickUtils.PickHandler() {
-                @Override
-                public void onPickSuccess(ArrayList<String> photos) {
-                    photoAdapter.refresh(photos);
-                }
+        PhotoPickUtils.onActivityResult(requestCode, resultCode, data, new PhotoPickUtils.PickHandler() {
+            @Override
+            public void onPickSuccess(ArrayList<String> photos) {
+                photoAdapter.refresh(photos);
+            }
 
-                @Override
-                public void onPreviewBack(ArrayList<String> photos) {
-                    photoAdapter.setPhotoPaths(photos);
-                }
+            @Override
+            public void onPreviewBack(ArrayList<String> photos) {
+                photoAdapter.setPhotoPaths(photos);
+            }
 
-                @Override
-                public void onPickFail(String error) {
-                    ToastUtil.show(error);
+            @Override
+            public void onPickFail(String error) {
+                ToastUtil.show(error);
 
-                    selectedPhotos.clear();
-                    photoAdapter.notifyDataSetChanged();
-                }
+                selectedPhotos.clear();
+                photoAdapter.notifyDataSetChanged();
+            }
 
-                @Override
-                public void onPickCancel() {
-                }
-            });
-        }
+            @Override
+            public void onPickCancel() {
+            }
+        });
 
     }
 
