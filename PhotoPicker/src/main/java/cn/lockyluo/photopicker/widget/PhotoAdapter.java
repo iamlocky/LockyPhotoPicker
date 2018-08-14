@@ -84,7 +84,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         this.photoPaths.clear();
 
         if (photoPaths != null && photoPaths.size() > 0) {
-            boolean bo=photoSet.addAll(photoPaths);
+            boolean bo = photoSet.addAll(photoPaths);
             this.photoPaths.addAll(photoSet);
             if (!bo) {
                 ToastUtil.show(mContext.getString(R.string.__picker_had_selected_same_picture));
@@ -185,6 +185,19 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                 }
             });
         }
+        holder.ivPhoto.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (getItemViewType(position)==TYPE_ADD) {
+                    return false;
+                }
+                photoPaths.remove(position);
+                ToastUtil.show(mContext.getString(R.string.__picker_had_deleted_this));
+                notifyDataSetChanged();
+                return true;
+            }
+        });
+
     }
 
     //预览照片
