@@ -3,7 +3,6 @@ package cn.lockyluo.photopicker.utils;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 
 import java.io.File;
 
@@ -19,6 +18,4 @@ public class PickerFileProvider extends FileProvider {
         providerAuth=context.getPackageName()+".fileProvider";
         return getUriForFile(context,providerAuth,file);
     }
-
-
 }

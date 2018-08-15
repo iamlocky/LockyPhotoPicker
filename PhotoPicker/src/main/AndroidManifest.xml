@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <application >
+    <application>
         <provider
             android:name=".utils.PickerFileProvider"
             android:authorities="${applicationId}.fileProvider"
@@ -16,9 +16,7 @@
                 android:resource="@xml/__picker_filepaths" />
         </provider>
 
-        <activity
-            android:name="cn.lockyluo.photopicker.PhotoPickerActivity"/>
-        <activity
-            android:name="cn.lockyluo.photopicker.PhotoPagerActivity"/>
+        <activity android:name="cn.lockyluo.photopicker.PhotoPickerActivity" />
+        <activity android:name="cn.lockyluo.photopicker.PhotoPagerActivity" />
     </application>
 </manifest>

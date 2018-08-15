@@ -169,7 +169,7 @@ public class MultiPickResultView extends LinearLayout {
     }
 
 
-    public void showPics(List<String> paths) {
+    public void showPictures(List<String> paths) {
         if (paths != null) {
             selectedPhotos.clear();
             selectedPhotos.addAll(paths);
@@ -190,7 +190,10 @@ public class MultiPickResultView extends LinearLayout {
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int resultOrder=data.getIntExtra("order",-1);
+        int resultOrder= -1;
+        if (data!=null) {
+            resultOrder = data.getIntExtra("order",-1);
+        }
         if (resultOrder!=order){
             Log.d(TAG, "onActivityResult: order doesn't match, ignored");
             return;
