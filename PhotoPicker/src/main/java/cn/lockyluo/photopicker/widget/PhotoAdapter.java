@@ -49,6 +49,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     private int action;
     private int maxCount;
+    private int order=-1;
     final static int TYPE_ADD = 1;
     final static int TYPE_PHOTO = 2;
 
@@ -60,6 +61,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         this.maxCount = maxCount;
     }
 
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
     public PhotoAdapter(Context mContext, ArrayList<String> photoPaths, int maxCount) {
         this.maxCount = maxCount;
@@ -227,7 +235,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         if (photoPaths != null && photoPaths.size() == maxCount) {
             ToastUtil.show("已选了" + maxCount + "张图片");
         } else {
-            PhotoPickUtils.startPick((Activity) mContext, true, launchCamera, maxCount - photoPaths.size(), new ArrayList<String>());
+            PhotoPickUtils.startPick((Activity) mContext, true, launchCamera, maxCount - photoPaths.size(),order, new ArrayList<String>());
         }
     }
 

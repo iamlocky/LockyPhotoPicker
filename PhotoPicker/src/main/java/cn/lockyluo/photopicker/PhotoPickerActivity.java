@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import static cn.lockyluo.photopicker.PhotoPicker.DEFAULT_MAX_COUNT;
 import static cn.lockyluo.photopicker.PhotoPicker.EXTRA_GRID_COLUMN;
 import static cn.lockyluo.photopicker.PhotoPicker.EXTRA_LAUNCH_CAMERA;
 import static cn.lockyluo.photopicker.PhotoPicker.EXTRA_MAX_COUNT;
+import static cn.lockyluo.photopicker.PhotoPicker.EXTRA_ORDER;
 import static cn.lockyluo.photopicker.PhotoPicker.EXTRA_ORIGINAL_PHOTOS;
 import static cn.lockyluo.photopicker.PhotoPicker.EXTRA_PREVIEW_ENABLED;
 import static cn.lockyluo.photopicker.PhotoPicker.EXTRA_SHOW_CAMERA;
@@ -35,6 +37,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
+    private static final String TAG = "PhotoPickerActivity";
     private PhotoPickerFragment pickerFragment;
     private ImagePagerFragment imagePagerFragment;
     //private MenuItem menuDoneItem;
@@ -46,6 +49,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
     private ArrayList<String> originalPhotos = null;
 
     private Titlebar titlebar;
+    private int order;
 
 
     @Override
@@ -56,7 +60,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
         boolean showGif = getIntent().getBooleanExtra(EXTRA_SHOW_GIF, true);
         boolean previewEnabled = getIntent().getBooleanExtra(EXTRA_PREVIEW_ENABLED, true);
         boolean launchCamera = getIntent().getBooleanExtra(EXTRA_LAUNCH_CAMERA, false);
-
+        order=getIntent().getIntExtra(EXTRA_ORDER, -1);
         setShowGif(showGif);
 
         try {
@@ -150,6 +154,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
     void setResultAndFinish(ArrayList photos) {
         Intent intent = new Intent();
         intent.putStringArrayListExtra(KEY_SELECTED_PHOTOS, photos);
+        intent.putExtra("order",order);
         setResult(RESULT_OK, intent);
         finish();
     }

@@ -28,6 +28,7 @@ public class PhotoPicker {
     public final static String EXTRA_ORIGINAL_PHOTOS = "ORIGINAL_PHOTOS";
     public final static String EXTRA_PREVIEW_ENABLED = "PREVIEW_ENABLED";
     public final static String EXTRA_LAUNCH_CAMERA = "LAUNCH_CAMERA";//是否立即启动相机
+    public final static String EXTRA_ORDER = "ORDER";//是否立即启动相机
 
     public static PhotoPickerBuilder builder() {
         return new PhotoPickerBuilder();
@@ -123,6 +124,11 @@ public class PhotoPicker {
 
         public PhotoPickerBuilder setPreviewEnabled(boolean previewEnabled) {
             mPickerOptionsBundle.putBoolean(EXTRA_PREVIEW_ENABLED, previewEnabled);
+            return this;
+        }
+
+        public PhotoPickerBuilder setOrder(int order) {
+            mPickerOptionsBundle.putInt(EXTRA_ORDER, order);
             return this;
         }
     }

@@ -48,6 +48,7 @@ public class MultiPickResultView extends LinearLayout {
     public static final int ACTION_ONLY_SHOW = 2;//该组件仅用于图片显示
 
     private int maxCount;
+    private int order=-1;//该值用于区分使用了多个MultiPickResultView的场景，避免回传时更新所有的MultiPickResultView，默认为-1
 
 
     public RecyclerView recyclerView;
@@ -69,6 +70,18 @@ public class MultiPickResultView extends LinearLayout {
         }
         initView(context, attrs);
 
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    //建议在init前调用
+    public void setOrder(int order) {
+        this.order = order;
+        if (photoAdapter!=null){
+            photoAdapter.setOrder(order);
+        }
     }
 
     @Override
@@ -108,9 +121,6 @@ public class MultiPickResultView extends LinearLayout {
 
         screenWidth = PickerApp.getInstance().getResources().getDisplayMetrics().widthPixels;
 
-        Log.d(TAG, "onMeasure:screenWidth " + screenWidth);
-        Log.d(TAG, "onMeasure:width " + width);
-        Log.d(TAG, "onMeasure:height " + height);
         if (widMode == MeasureSpec.AT_MOST) {
             width = screenWidth / 3;
             if (getSuggestedMinimumWidth() < width) {
@@ -152,6 +162,7 @@ public class MultiPickResultView extends LinearLayout {
             selectedPhotos.addAll(photos);
         }
         photoAdapter = new PhotoAdapter(context, selectedPhotos, this.maxCount);
+        photoAdapter.setOrder(order);
         photoAdapter.setAction(action);
         recyclerView.setAdapter(photoAdapter);
 
@@ -179,6 +190,11 @@ public class MultiPickResultView extends LinearLayout {
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int resultOrder=data.getIntExtra("order",-1);
+        if (resultOrder!=order){
+            Log.d(TAG, "onActivityResult: order doesn't match, ignored");
+            return;
+        }
         PhotoPickUtils.onActivityResult(requestCode, resultCode, data, new PhotoPickUtils.PickHandler() {
             @Override
             public void onPickSuccess(ArrayList<String> photos) {

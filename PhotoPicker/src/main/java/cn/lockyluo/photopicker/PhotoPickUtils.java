@@ -49,6 +49,18 @@ public class PhotoPickUtils {
                 .start(context, PhotoPicker.REQUEST_CODE);
     }
 
+    public static void startPick(Activity context, boolean showGif, boolean launchCamera, int photoCount,int order, ArrayList<String> photos) {
+        PhotoPicker.builder()
+                .setOrder(order)
+                .setPhotoCount(photoCount)
+                .setShowCamera(true)
+                .setShowGif(showGif)
+                .setSelected(photos)
+                .setPreviewEnabled(true)
+                .setLaunchCamera(launchCamera)
+                .start(context, PhotoPicker.REQUEST_CODE);
+    }
+
 
     public interface PickHandler {
         void onPickSuccess(ArrayList<String> photos);

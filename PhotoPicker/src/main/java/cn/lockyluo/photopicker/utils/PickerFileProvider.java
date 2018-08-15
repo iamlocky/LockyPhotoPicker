@@ -17,7 +17,6 @@ public class PickerFileProvider extends FileProvider {
 
     public static Uri getUriForFile(Context context, File file) {
         providerAuth=context.getPackageName()+".fileProvider";
-        Log.d("PickerFileProvider", "getUriForFile: "+providerAuth);
         return getUriForFile(context,providerAuth,file);
     }
 
