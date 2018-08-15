@@ -1,7 +1,6 @@
 package cn.lockyluo.photopicker.widget;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,11 +10,12 @@ import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import java.lang.annotation.Retention;
@@ -25,44 +25,34 @@ import java.util.List;
 
 import cn.lockyluo.photopicker.PhotoPickUtils;
 import cn.lockyluo.photopicker.PickerApp;
-import cn.lockyluo.photopicker.utils.CommonData;
+import cn.lockyluo.photopicker.R;
 import cn.lockyluo.photopicker.utils.ImageCaptureManager;
 import cn.lockyluo.photopicker.utils.ToastUtil;
 
 /**
  * Updated by LockyLuo on 18/8/3.
  */
-public class MultiPickResultView extends FrameLayout {
+public class MultiPickResultView extends LinearLayout {
     private static final String TAG = "MultiPickResultView";
-    @IntDef({ACTION_SELECT, ACTION_ONLY_SHOW})
+    private View view;
+    private int screenWidth = 100;
 
+    @IntDef({ACTION_SELECT, ACTION_ONLY_SHOW})
     //Tell the compiler not to store annotation data in the .class file
     @Retention(RetentionPolicy.SOURCE)
-
     //Declare the NavigationMode annotation
     public @interface MultiPicAction {
     }
 
-
     public static final int ACTION_SELECT = 1;//该组件用于图片选择
     public static final int ACTION_ONLY_SHOW = 2;//该组件仅用于图片显示
-
-    private int action;
-
-    public int getMaxCount() {
-        return maxCount;
-    }
-
-    public void setMaxCount(int maxCount) {
-        this.maxCount = maxCount;
-    }
 
     private int maxCount;
 
 
-    android.support.v7.widget.RecyclerView recyclerView;
-    PhotoAdapter photoAdapter;
-    ArrayList<String> selectedPhotos;
+    public RecyclerView recyclerView;
+    private PhotoAdapter photoAdapter;
+    private ArrayList<String> selectedPhotos;
 
     public MultiPickResultView(Context context) {
         this(context, null, 0);
@@ -74,20 +64,17 @@ public class MultiPickResultView extends FrameLayout {
 
     public MultiPickResultView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        if (PickerApp.getInstance()==null){
+        if (PickerApp.getInstance() == null) {
             PickerApp.init(context.getApplicationContext());
         }
         initView(context, attrs);
-        initData(context, attrs);
-        initEvent(context, attrs);
-
 
     }
 
     @Override
     public void setBackgroundColor(@ColorInt int color) {
         super.setBackgroundColor(color);
-        if (recyclerView!=null) {
+        if (recyclerView != null) {
             recyclerView.setBackgroundColor(color);
         }
     }
@@ -96,34 +83,52 @@ public class MultiPickResultView extends FrameLayout {
     public void setBackground(Drawable background) {
         super.setBackground(background);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (recyclerView!=null) {
+            if (recyclerView != null) {
                 recyclerView.setBackground(background);
             }
         }
     }
 
-    private void initEvent(Context context, AttributeSet attrs) {
-
-    }
-
-    private void initData(Context context, AttributeSet attrs) {
-
-    }
 
     private void initView(Context context, AttributeSet attrs) {
-        int padding=dp2Px(context,5);
-        recyclerView = new android.support.v7.widget.RecyclerView(context, attrs);
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
-        LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-        params.setMargins(padding,padding,padding,padding);
-        recyclerView.setLayoutParams(params);
-        setBackgroundColor(Color.WHITE);
+        setOrientation(VERTICAL);
+        view = LayoutInflater.from(context).inflate(R.layout.__picker_content_layout, this);
+        recyclerView = view.findViewById(R.id.recyclerview_content);
 
-        this.addView(recyclerView);
+        setBackgroundColor(Color.WHITE);
     }
 
-    public int dp2Px(Context context,int dp) {
-        float density = context.getResources().getDisplayMetrics().density;
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int widMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heiMode = MeasureSpec.getMode(heightMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+
+        screenWidth = PickerApp.getInstance().getResources().getDisplayMetrics().widthPixels;
+
+        Log.d(TAG, "onMeasure:screenWidth " + screenWidth);
+        Log.d(TAG, "onMeasure:width " + width);
+        Log.d(TAG, "onMeasure:height " + height);
+        if (widMode == MeasureSpec.AT_MOST) {
+            width = screenWidth / 3;
+            if (getSuggestedMinimumWidth() < width) {
+                setMinimumWidth(width);
+            }
+        }
+
+        if (heiMode == MeasureSpec.AT_MOST) {
+            height = screenWidth / 3;
+            if (getSuggestedMinimumHeight() < height) {
+                setMinimumHeight(height);
+            }
+        }
+//        setMeasuredDimension(width, height);
+    }
+
+    public int dp2Px(int dp) {
+        float density = getContext().getResources().getDisplayMetrics().density;
         int px = (int) (dp * density + .5f);
         return px;
     }
@@ -134,8 +139,7 @@ public class MultiPickResultView extends FrameLayout {
         this(context, attrs, defStyleAttr);
     }
 
-    public void init(Activity context, int maxCount, @MultiPicAction int action, List<String> photos) {
-        this.action = action;
+    public void init(Context context, int maxCount, @MultiPicAction int action, List<String> photos) {
         this.maxCount = maxCount;
 
         if (action == MultiPickResultView.ACTION_ONLY_SHOW) {//当只用作显示图片时,一行显示3张
@@ -144,7 +148,6 @@ public class MultiPickResultView extends FrameLayout {
 
         selectedPhotos = new ArrayList<>();
 
-        this.action = action;
         if (photos != null && photos.size() > 0) {
             selectedPhotos.addAll(photos);
         }
@@ -166,11 +169,11 @@ public class MultiPickResultView extends FrameLayout {
     /**
      * 一键启动相机
      */
-    public void launchCamera(){
-        if (photoAdapter!=null){
+    public void launchCamera() {
+        if (photoAdapter != null) {
             photoAdapter.startPicker(true);
-        }else {
-            Log.e(TAG, "launchCamera: photoAdapter is null",new Throwable());
+        } else {
+            Log.e(TAG, "launchCamera: photoAdapter is null", new Throwable());
         }
     }
 
@@ -190,9 +193,9 @@ public class MultiPickResultView extends FrameLayout {
             @Override
             public void onPickFail(String error) {
                 ToastUtil.show(error);
-
                 selectedPhotos.clear();
                 photoAdapter.notifyDataSetChanged();
+
             }
 
             @Override
@@ -204,6 +207,7 @@ public class MultiPickResultView extends FrameLayout {
 
     /**
      * 获取真实路径地址
+     *
      * @return
      */
     public List<String> getPhotos() {
@@ -212,13 +216,14 @@ public class MultiPickResultView extends FrameLayout {
 
     /**
      * 获取uri地址
+     *
      * @return
      */
-    public List<Uri> getPhotosUri(){
-        List<Uri> uriList=new ArrayList<>();
-        if (selectedPhotos!=null){
+    public List<Uri> getPhotosUri() {
+        List<Uri> uriList = new ArrayList<>();
+        if (selectedPhotos != null) {
             for (int i = 0; i < selectedPhotos.size(); i++) {
-                uriList.add(ImageCaptureManager.fileToUri(getContext(),selectedPhotos.get(i)));
+                uriList.add(ImageCaptureManager.fileToUri(getContext(), selectedPhotos.get(i)));
             }
         }
         return uriList;
