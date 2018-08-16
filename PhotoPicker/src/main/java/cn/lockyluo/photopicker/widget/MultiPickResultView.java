@@ -9,13 +9,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
-import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import java.lang.annotation.Retention;
@@ -32,10 +32,10 @@ import cn.lockyluo.photopicker.utils.ToastUtil;
 /**
  * Updated by LockyLuo on 18/8/3.
  */
-public class MultiPickResultView extends LinearLayout {
+public class MultiPickResultView extends FrameLayout {
     private static final String TAG = "MultiPickResultView";
     private View view;
-    private int screenWidth = 100;
+    private GridLayoutManager gridLayoutManager;
 
     @IntDef({ACTION_SELECT, ACTION_ONLY_SHOW})
     //Tell the compiler not to store annotation data in the .class file
@@ -48,7 +48,7 @@ public class MultiPickResultView extends LinearLayout {
     public static final int ACTION_ONLY_SHOW = 2;//该组件仅用于图片显示
 
     private int maxCount;
-    private int order=-1;//该值用于区分使用了多个MultiPickResultView的场景，避免回传时更新所有的MultiPickResultView，默认为-1
+    private int order = -1;//该值用于区分使用了多个MultiPickResultView的场景，避免回传时更新所有的MultiPickResultView，默认为-1
 
 
     public RecyclerView recyclerView;
@@ -76,12 +76,17 @@ public class MultiPickResultView extends LinearLayout {
         return order;
     }
 
-    //建议在init前调用
+    //建议在init前调用,或者使用带order参数的init方法
     public void setOrder(int order) {
         this.order = order;
-        if (photoAdapter!=null){
+        if (photoAdapter != null) {
             photoAdapter.setOrder(order);
         }
+    }
+
+    //获取GridLayoutManager，用于修改spanCount
+    public GridLayoutManager getGridLayoutManager() {
+        return gridLayoutManager;
     }
 
     @Override
@@ -104,37 +109,16 @@ public class MultiPickResultView extends LinearLayout {
 
 
     private void initView(Context context, AttributeSet attrs) {
-        setOrientation(VERTICAL);
         view = LayoutInflater.from(context).inflate(R.layout.__picker_content_layout, this);
         recyclerView = view.findViewById(R.id.recyclerview_content);
-
+        gridLayoutManager = new GridLayoutManager(context,3);
+        recyclerView.setLayoutManager(gridLayoutManager);
         setBackgroundColor(Color.WHITE);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int widMode = MeasureSpec.getMode(widthMeasureSpec);
-        int heiMode = MeasureSpec.getMode(heightMeasureSpec);
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
-
-        screenWidth = PickerApp.getInstance().getResources().getDisplayMetrics().widthPixels;
-
-        if (widMode == MeasureSpec.AT_MOST) {
-            width = screenWidth / 3;
-            if (getSuggestedMinimumWidth() < width) {
-                setMinimumWidth(width);
-            }
-        }
-
-        if (heiMode == MeasureSpec.AT_MOST) {
-            height = screenWidth / 3;
-            if (getSuggestedMinimumHeight() < height) {
-                setMinimumHeight(height);
-            }
-        }
-//        setMeasuredDimension(width, height);
     }
 
     public int dp2Px(int dp) {
@@ -151,10 +135,7 @@ public class MultiPickResultView extends LinearLayout {
 
     public void init(Context context, int maxCount, @MultiPicAction int action, List<String> photos) {
         this.maxCount = maxCount;
-
-        if (action == MultiPickResultView.ACTION_ONLY_SHOW) {//当只用作显示图片时,一行显示3张
-            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
-        }
+        gridLayoutManager.setSpanCount(maxCount < 3 ? maxCount : 3);
 
         selectedPhotos = new ArrayList<>();
 
@@ -165,7 +146,11 @@ public class MultiPickResultView extends LinearLayout {
         photoAdapter.setOrder(order);
         photoAdapter.setAction(action);
         recyclerView.setAdapter(photoAdapter);
+    }
 
+    public void init(Context context, int maxCount, int order, @MultiPicAction int action, List<String> photos) {
+        init(context, maxCount, action, photos);
+        setOrder(order);
     }
 
 
@@ -190,11 +175,11 @@ public class MultiPickResultView extends LinearLayout {
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int resultOrder= -1;
-        if (data!=null) {
-            resultOrder = data.getIntExtra("order",-1);
+        int resultOrder = -1;
+        if (data != null) {
+            resultOrder = data.getIntExtra("order", -1);
         }
-        if (resultOrder!=order){
+        if (resultOrder != order) {
             Log.d(TAG, "onActivityResult: order doesn't match, ignored");
             return;
         }

@@ -49,7 +49,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     private int action;
     private int maxCount;
-    private int order=-1;
+    private int order = -1;
     final static int TYPE_ADD = 1;
     final static int TYPE_PHOTO = 2;
 
@@ -83,7 +83,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             this.photoPaths.addAll(photoPaths);
             notifyDataSetChanged();
         }
-
     }
 
     public void refresh(ArrayList<String> photoPaths) {
@@ -140,7 +139,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                     }
                 });
 
-
             } else {
                 holder.ivPhoto.setPadding(padding, padding, padding, padding);
 
@@ -157,8 +155,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                 if (canLoadImage) {
                     glide
                             .load(uri)
-                            .thumbnail(0.1f)
                             .apply(options.centerCrop())
+                            .thumbnail(0.1f)
                             .into(holder.ivPhoto);
                 }
 
@@ -196,7 +194,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         holder.ivPhoto.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (getItemViewType(position)==TYPE_ADD) {
+                if (getItemViewType(position) == TYPE_ADD) {
                     return false;
                 }
                 photoPaths.remove(position);
@@ -235,7 +233,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         if (photoPaths != null && photoPaths.size() == maxCount) {
             ToastUtil.show("已选了" + maxCount + "张图片");
         } else {
-            PhotoPickUtils.startPick((Activity) mContext, true, launchCamera, maxCount - photoPaths.size(),order, new ArrayList<String>());
+            PhotoPickUtils.startPick((Activity) mContext, true, launchCamera, maxCount - photoPaths.size(), order, new ArrayList<String>());
         }
     }
 
