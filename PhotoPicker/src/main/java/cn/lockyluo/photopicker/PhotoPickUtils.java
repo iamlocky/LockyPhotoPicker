@@ -34,8 +34,10 @@ public class PhotoPickUtils {
                 pickHandler.onPickCancel();
             }
         }
+    }
 
-
+    public static void startPick(Activity context, boolean showGif, int photoCount, ArrayList<String> photos) {
+        startPick(context,showGif,false,photoCount,photos);
     }
 
     public static void startPick(Activity context, boolean showGif, boolean launchCamera, int photoCount, ArrayList<String> photos) {
